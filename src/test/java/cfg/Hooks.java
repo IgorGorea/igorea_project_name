@@ -1,11 +1,11 @@
-package ui.cfg;
+package cfg;
 
 import api.actions.ApiActions;
 import io.cucumber.java.*;
 import org.openqa.selenium.WebDriver;
-import ui.utils.ConfigReader;
-import ui.context.ObjectKeys;
-import ui.context.ScenarioContext;
+import utililities.ConfigReader;
+import context.ObjectKeys;
+import context.ScenarioContext;
 
 import java.time.Duration;
 

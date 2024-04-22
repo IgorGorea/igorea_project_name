@@ -3,7 +3,7 @@ package ui.pages;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import ui.context.ObjectKeys;
+import context.ObjectKeys;
 
 public class LoginPage extends BasePage {
     @FindBy(id = "add-contact")

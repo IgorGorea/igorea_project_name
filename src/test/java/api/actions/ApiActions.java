@@ -5,9 +5,9 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ui.context.ObjectKeys;
-import ui.context.ScenarioContext;
-import ui.utils.ConfigReader;
+import context.ObjectKeys;
+import context.ScenarioContext;
+import utililities.ConfigReader;
 
 import java.util.List;
 import java.util.Map;

@@ -7,11 +7,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import ui.cfg.BrowserDriver;
-import ui.cfg.CustomParams;
-import ui.context.ObjectKeys;
-import ui.context.ScenarioContext;
-import ui.utils.WaitUtilities;
+import cfg.BrowserDriver;
+import cfg.CustomParams;
+import context.ObjectKeys;
+import context.ScenarioContext;
+import utililities.WaitUtilities;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 

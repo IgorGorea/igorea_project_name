@@ -3,8 +3,8 @@ package api.actions;
 import utililities.JsonParser;
 import com.github.javafaker.Faker;
 import io.restassured.response.Response;
-import ui.context.ObjectKeys;
-import ui.context.ScenarioContext;
+import context.ObjectKeys;
+import context.ScenarioContext;
 
 import java.time.Instant;
 import java.time.ZoneId;

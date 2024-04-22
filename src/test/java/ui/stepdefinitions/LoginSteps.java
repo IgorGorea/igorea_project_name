@@ -6,9 +6,9 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.hamcrest.MatcherAssert;
 import org.openqa.selenium.WebDriver;
-import ui.utils.ConfigReader;
-import ui.context.ObjectKeys;
-import ui.context.ScenarioContext;
+import utililities.ConfigReader;
+import context.ObjectKeys;
+import context.ScenarioContext;
 import ui.pages.LoginPage;
 
 import static org.hamcrest.Matchers.is;

@@ -1,10 +1,10 @@
-package ui.cfg;
+package cfg;
 
 import io.cucumber.java.Scenario;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
-import ui.utils.ConfigReader;
+import utililities.ConfigReader;
 
 import java.io.File;
 import java.io.IOException;

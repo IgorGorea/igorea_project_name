@@ -1,11 +1,11 @@
-package ui.cfg;
+package cfg;
 
 import io.cucumber.java.DataTableType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebElement;
-import ui.utils.ConfigReader;
-import ui.utils.WaitUtilities;
+import utililities.ConfigReader;
+import utililities.WaitUtilities;
 
 public class CustomParams {
     protected final Logger logger = LogManager.getLogger(CustomParams.class);

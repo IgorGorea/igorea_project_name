@@ -1,4 +1,4 @@
-package ui.utils;
+package utililities;
 
 
 import org.awaitility.Awaitility;

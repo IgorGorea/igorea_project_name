@@ -1,6 +1,6 @@
-package ui.context;
+package context;
 
-import ui.utils.ConfigReader;
+import utililities.ConfigReader;
 
 import java.util.HashMap;
 import java.util.Map;

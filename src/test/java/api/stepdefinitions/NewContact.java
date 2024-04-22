@@ -7,8 +7,8 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ui.context.ObjectKeys;
-import ui.context.ScenarioContext;
+import context.ObjectKeys;
+import context.ScenarioContext;
 
 import java.util.Map;
 

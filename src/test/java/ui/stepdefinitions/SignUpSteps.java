@@ -7,9 +7,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hamcrest.MatcherAssert;
 import org.openqa.selenium.WebDriver;
-import ui.utils.ConfigReader;
-import ui.context.ObjectKeys;
-import ui.context.ScenarioContext;
+import utililities.ConfigReader;
+import context.ObjectKeys;
+import context.ScenarioContext;
 import ui.pages.SignUpPage;
 
 import java.util.Map;
