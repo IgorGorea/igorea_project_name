@@ -1,6 +1,6 @@
 package api.actions;
 
-import api.utililities.JsonParser;
+import utililities.JsonParser;
 import com.github.javafaker.Faker;
 import io.restassured.response.Response;
 import ui.context.ObjectKeys;

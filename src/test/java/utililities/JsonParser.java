@@ -1,4 +1,4 @@
-package api.utililities;
+package utililities;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
