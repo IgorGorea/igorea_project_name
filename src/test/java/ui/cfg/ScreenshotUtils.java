@@ -1,15 +1,10 @@
-package ui.actions;
+package ui.cfg;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.java.Scenario;
-import lombok.Getter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
-import ui.context.ConfigReader;
+import ui.utils.ConfigReader;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,64 +14,64 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-//TODO read more about lombok
-@Getter
-public abstract class DriverActions {
-    protected static WebDriver abstractDriver;
-    protected static ConfigReader configReader = new ConfigReader();
-    protected final Logger logger = LogManager.getLogger();
-    protected String runStartTime;
-    protected String stepName;
+public class ScreenshotUtils {
+    private String stepName;
+    private WebDriver driver = BrowserDriver.getDriver();
 
-    public void setWebDriver(WebDriver webDriver) {
-        abstractDriver = webDriver;
-    }
-    public void openPage(String url){
-        abstractDriver.navigate().to(url);
-        logger.info("The " + url + " has been opened");
-    }
+    protected void captureScreen(String stepName, boolean isNegativeScenario, Scenario scenario) {
+        try {
+            TakesScreenshot screenshotDriver = (TakesScreenshot) driver;
+            File source = screenshotDriver.getScreenshotAs(OutputType.FILE);
+            //For screens in report
+            byte[] screenshot = screenshotDriver.getScreenshotAs(OutputType.BYTES);
+            scenario.attach(screenshot,"image/png", "Screenshot for " + stepName);
 
-    protected void captureScreen(String stepName, boolean isNegativeScenario) {
-            try {
-                TakesScreenshot screenshotDriver = (TakesScreenshot) abstractDriver;
-                File source = screenshotDriver.getScreenshotAs(OutputType.FILE);
+            String currentDate = getCurrentDateTime("yyyy-MM-dd");
+            String baseDirPath = "./target/screenshots/" + currentDate + "/";
+            createDirectory(baseDirPath);
+            String runStartTime = getCurrentDateTime("HH.mm");
+            String baseDirPathByHour = baseDirPath + runStartTime + "/";
+            createDirectory(baseDirPathByHour);
 
-                String currentDate = getCurrentDateTime("yyyy-MM-dd");
-                String baseDirPath = "./target/screenshots/" + currentDate + "/";
-                createDirectory(baseDirPath);
-                runStartTime = getCurrentDateTime("HH.mm");
-                String baseDirPathByHour = baseDirPath + runStartTime + "/";
-                createDirectory(baseDirPathByHour);
+            String stepDirPath = baseDirPathByHour + stepName + "/";
+            createDirectory(stepDirPath);
 
-                String stepDirPath = baseDirPathByHour + stepName + "/";
-                createDirectory(stepDirPath);
-
-                if (isNegativeScenario) {
-                    stepName += "_Error";
-                }
-
-                String screenshotName = stepName + "_" + getCurrentDateTime("HHmmssSSS") + ".png";
-                String screenshotPath = stepDirPath + screenshotName;
-
-                Files.copy(source.toPath(), Paths.get(screenshotPath));
-
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (isNegativeScenario) {
+                stepName += "_ErrorMes";
             }
+
+            String screenshotName = stepName + "_" + getCurrentDateTime("HHmmssSSS") + ".png";
+            String screenshotPath = stepDirPath + screenshotName;
+
+            Files.copy(source.toPath(), Paths.get(screenshotPath));
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
+
+    public void setStepName(String stepName) {
+        this.stepName = stepName;
+    }
+    public String getStepName() {
+        return stepName;
+    }
     protected String getCurrentDateTime(String pattern) {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern(pattern));
     }
+
     private void createDirectory(String path) {
         File directory = new File(path);
         if (!directory.exists()) {
-                directory.mkdirs();
+            directory.mkdirs();
         }
     }
+
     protected boolean isNegativeScenario(Scenario scenario) {
         return scenario.getSourceTagNames().contains("@Negative");
     }
-    public static void deleteOldScreenshotsDirectories() {
+
+    public static void deleteOldScreenshotsDirectories(ConfigReader configReader) {
         String screenshotsDirectoryPath = "./target/screenshots/";
         String screenshotRetentionPeriodProperty = configReader.getProperty("screenshotRetentionPeriodInDays");
         if (screenshotRetentionPeriodProperty == null) {
@@ -104,6 +99,7 @@ public abstract class DriverActions {
             }
         }
     }
+
     private static void deleteDirectory(File directory) {
         if (!directory.exists()) {
             return;
@@ -126,5 +122,4 @@ public abstract class DriverActions {
             e.printStackTrace();
         }
     }
-
 }

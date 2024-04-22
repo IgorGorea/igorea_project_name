@@ -1,28 +1,49 @@
 package ui.cfg;
 
+import api.actions.ApiActions;
 import io.cucumber.java.*;
-import ui.actions.DriverActions;
+import org.openqa.selenium.WebDriver;
+import ui.utils.ConfigReader;
+import ui.context.ObjectKeys;
+import ui.context.ScenarioContext;
 
-public class Hooks extends BrowserDriver {
+import java.time.Duration;
+
+
+public class Hooks {
+    ApiActions apiActions = new ApiActions();
+    ScreenshotUtils screenshotUtils = new ScreenshotUtils();
+    ScenarioContext scenarioContext = ScenarioContext.getScenarioInstance();
 
     @BeforeAll
-    public static void beforeAll(){
-        DriverActions.
-        deleteOldScreenshotsDirectories();
-    }
-    @Before("@UI")
-    public void before(Scenario scenario){
-        stepName = scenario.getName();
-        setUp();
-    }
-    @AfterStep("@UI")
-    public void afterStep(Scenario scenario) {
-        boolean isNegativeScenario = isNegativeScenario(scenario);
-        captureScreen(scenario.getName(), isNegativeScenario);
-    }
-    @After("@UI")
-    public void after(){
-        tearDown();
+    public static void beforeAll() {
+        ConfigReader configReader = new ConfigReader();
+        ScreenshotUtils.deleteOldScreenshotsDirectories(configReader);
     }
 
+    @Before("@UI")
+    public void beforeUI(Scenario scenario) {
+        screenshotUtils.setStepName(scenario.getName());
+        WebDriver driver = BrowserDriver.getDriver();
+        driver.manage().window().maximize();
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(10));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+        String basePageUrl = scenarioContext.getConfigReader().getProperty("base.page");
+        driver.navigate().to(basePageUrl);
+        scenarioContext.setData(ObjectKeys.WEB_DRIVER, driver);
+    }
+
+    @AfterStep("@UI")
+    public void afterStep(Scenario scenario) {
+        boolean isNegativeScenario = screenshotUtils.isNegativeScenario(scenario);
+        screenshotUtils.captureScreen(scenario.getName(), isNegativeScenario, scenario);
+    }
+    @After("@API")
+    public void afterAPI() {
+        apiActions.deleteUserByBearer();
+    }
+    @After("@UI")
+    public void afterUI() {
+        BrowserDriver.tearDown();
+    }
 }

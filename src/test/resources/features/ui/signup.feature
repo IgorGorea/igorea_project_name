@@ -1,15 +1,15 @@
-@NotCyrnats-001 @UI @SmokeTest
-Feature: Log in functionality
+@NotCyrnats-001 @UI @SmokeTest @Run
+Feature: Sign up functionality
 
-  @Run
+  Background:
+    Given sign up page is opened
+
   Scenario: Successful sign up
-    Given sign up page is opened in chrome
-    When user registers with the valid credentials
-    Then the user is successfully created
+    When user submits valid credentials
+    Then user is successfully created
 
-  @Run
+
   Scenario: Successful cancel of registration
-    Given sign up page is opened in chrome
     When user cancels with the following credentials:
       | FirstName | Doctor             |
       | LastName  | Acula              |
@@ -17,15 +17,14 @@ Feature: Log in functionality
       | Password  | Password123        |
     Then the main page is opened
 
-  @Negative @Run
+  @Negative
   Scenario Outline: Failed sign up
-    Given sign up page is opened in chrome
     When user registers with the following credentials:
       | FirstName | <firstname> |
       | LastName  | <lastname>  |
       | Email     | <email>     |
       | Password  | <password>  |
-    Then the error on sign up page appeared:
+    Then the error on sign up page is displayed:
       | ErrorMessage | <error> |
     Examples:
       | firstname | lastname | email   | password | error                                                                                                                                             |

@@ -1,43 +1,63 @@
 package api.actions;
 
-import api.utililities.ContextEnum;
-import api.utililities.JsonParser;
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ui.actions.DriverActions;
+import ui.context.ObjectKeys;
+import ui.context.ScenarioContext;
+import ui.utils.ConfigReader;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import static io.restassured.RestAssured.*;
-import static io.restassured.RestAssured.given;
+import static org.junit.Assert.assertTrue;
 
-public class ApiActions extends DriverActions {
-    String bearer = configReader.getProperty("bearer");
+public class ApiActions {
+    protected ConfigReader configReader = new ConfigReader();
+    protected static final Logger logger = LogManager.getLogger(ApiActions.class);
+    protected ScenarioContext scenarioContext = ScenarioContext.getScenarioInstance();
     private Response response;
-    private RequestSpecification responseMethod(){
+    private final UtilActions utilActions = new UtilActions();
+
+    private RequestSpecification responseMethodWOBearer() {
+
+        return given()
+                .when();
+    }
+
+    private RequestSpecification responseMethod() {
+        String bearer = scenarioContext.getData(ObjectKeys.BEARER).toString();
         return given().header("Authorization", "Bearer " + bearer)
                 .when();
     }
-    protected static final Logger logger = LogManager.getLogger();
+
+    private RequestSpecification responseMethod(String bearer) {
+        return given().header("Authorization", "Bearer " + bearer)
+                .when();
+    }
 
     public void getContactListHealthCheck() {
-        // Specify base URI and base path
-        baseURI = configReader.getProperty("baseURI");
-        basePath = "/contacts";
-        logger.info("Base URI and base path are set to: " + baseURI + basePath);
-        // Send GET request and verify response
-        response = given().header("Authorization", "Bearer " + bearer)
-                .when()
-                .get();
-                //TODO to move it in exceptions
-//                .then()
-//                .statusCode(200).extract().response();
+        try {
+            String bearer = configReader.getProperty("bearer");
+            baseURI = configReader.getProperty("baseURI");
+            basePath = "/contacts";
+            logger.info("Base URI and base path are set to: " + baseURI + basePath);
+
+            response = responseMethod(bearer)
+                    .get();
+
+            if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
+                logger.info("GET request to contacts endpoint was successful with status code: " + response.getStatusCode());
+            } else {
+                logger.error("GET request to contacts endpoint failed. Status code: " + response.getStatusCode());
+            }
+        } catch (Exception e) {
+            logger.error("An exception occurred while sending GET request to contacts endpoint: " + e.getMessage());
+        }
     }
 
     public void getContactList() {
@@ -45,57 +65,96 @@ public class ApiActions extends DriverActions {
         basePath = "/contacts";
         logger.info("Base URI and base path: " + baseURI + basePath);
 
-        response = given().header("Authorization", "Bearer " + bearer)
-                .when()
+        response = responseMethod()
                 .get();
         response.then().log().all();
 
         List<String> firstNames = response.jsonPath().getList("firstName");
         boolean allHaveFirstName = firstNames.stream().allMatch(Objects::nonNull);
 
-        ContextEnum.FIRST_NAME_PRESENCE.saveBoolValue(allHaveFirstName);
-        ContextEnum.GET_STATUS_CODE.saveIntValue(response.getStatusCode());
+        scenarioContext.setData(ObjectKeys.FIRST_NAME_PRESENCE, allHaveFirstName);
+        scenarioContext.setData(ObjectKeys.GET_STATUS_CODE, response.getStatusCode());
     }
 
     public int getContactListStatusCode() {
-        int gStCode = ContextEnum.GET_STATUS_CODE.getIntValue();
+        int gStCode = (int) scenarioContext.getData(ObjectKeys.GET_STATUS_CODE);
         logger.debug(gStCode);
         return gStCode;
     }
 
-    public String getResponseBody() {
-        logger.debug("The body is: " + response.getBody().asString());
-        return response.getBody().asString();
+    public void assertThatBodyContains(String expContent) {
+        String body = ((Response) scenarioContext.getData(ObjectKeys.RESPONSE)).getBody().asString();
+        assertTrue("Response body does not contain " + expContent, body.contains(expContent));
+        logger.info("Is " + expContent + " present in the body: " + body.contains(expContent));
     }
 
     public void postRequestAddContactWithParameters(Map<String, String> params) {
         baseURI = configReader.getProperty("baseURI");
         basePath = "/contacts";
         logger.info("Current URI and base path: " + baseURI + basePath);
-        response = given().header("Authorization", "Bearer " + bearer)
+        response = responseMethod()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .log()
                 .all()
                 .post();
         response.then().log().all();
-        String contactId = JsonParser.extractValueFromResponseBody(response.getBody().asString(), "_id");
-        ContextEnum.NEW_CONTACT_ID.saveValue(contactId);
-        logger.debug(response.getStatusCode());
-        ContextEnum.POST_STATUS_CODE.saveIntValue(response.getStatusCode());
 
-        logger.info("Json parser got the value: " + JsonParser.extractValueFromResponseBody(response.getBody().asString(), "_id"));
+        String contactId = utilActions.getParamFromJson(response, "_id");
+        scenarioContext.setData(ObjectKeys.NEW_CONTACT_ID, contactId);
+        logger.info("Json parser got the value: " + contactId);
+        scenarioContext.setData(ObjectKeys.POST_STATUS_CODE, response.getStatusCode());
+        logger.debug("POST Status code:" + response.getStatusCode());
+        scenarioContext.setData(ObjectKeys.RESPONSE, response.then().extract().response());
     }
 
     public void deleteContactById(String ContactId) {
         baseURI = configReader.getProperty("baseURI");
         basePath = "/contacts/" + ContactId;
-        logger.debug(ContactId);
-        response = given().header("Authorization", "Bearer " + bearer)
+        logger.debug("Contact ID to be deleted:" + ContactId);
+        response = responseMethod()
                 .log()
                 .all()
                 .delete();
         response.then().log().all();
-        ContextEnum.DEL_STATUS_CODE.saveIntValue(response.getStatusCode());
+        logger.debug("DelStatCode:" + response.getStatusCode());
+        scenarioContext.setData(ObjectKeys.DEL_CONTACT_STATUS_CODE, response.getStatusCode());
+        scenarioContext.setData(ObjectKeys.RESPONSE, response.then().extract().response());
+    }
+
+    public void postRequestAddUserWithParameters(Map<String, String> params) {
+        baseURI = configReader.getProperty("baseURI");
+        basePath = "/users";
+        logger.info("Current URI and base path: " + baseURI + basePath);
+        response = responseMethodWOBearer()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .log()
+                .all()
+                .post();
+        response.then().log().all();
+        String token = utilActions.getParamFromJson(response, "token");
+        scenarioContext.setData(ObjectKeys.BEARER, token);
+        scenarioContext.setData(ObjectKeys.F_USER_NAME, utilActions.getParamFromJson(response, "user", "firstName"));
+        scenarioContext.setData(ObjectKeys.L_USER_NAME, utilActions.getParamFromJson(response, "user", "lastName"));
+        scenarioContext.setData(ObjectKeys.USER_EMAIL, utilActions.getParamFromJson(response, "user", "email"));
+        logger.debug("POST Status code:" + response.getStatusCode());
+        scenarioContext.setData(ObjectKeys.POST_STATUS_CODE, response.getStatusCode());
+        scenarioContext.setData(ObjectKeys.RESPONSE, response.then().extract().response());
+
+        logger.info("Json parser got the bearer value: " + utilActions.getParamFromJson(response, "token"));
+    }
+
+    public void deleteUserByBearer() {
+        baseURI = configReader.getProperty("baseURI");
+        basePath = "users/me";
+        logger.debug("Will be deleted " + scenarioContext.getData(ObjectKeys.F_USER_NAME).toString()
+                + " with token:" + scenarioContext.getData(ObjectKeys.BEARER).toString());
+        response = responseMethod()
+                .log()
+                .all()
+                .delete();
+        response.then().log().all();
+        scenarioContext.setData(ObjectKeys.DEL_USER_STATUS_CODE, response.getStatusCode());
     }
 }

@@ -1,13 +1,14 @@
-package ui.context;
-
-import ui.actions.DriverActions;
+package ui.utils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 public class ConfigReader {
     private final Properties properties;
+
     public ConfigReader() {
         properties = new Properties();
         try {
@@ -20,6 +21,18 @@ public class ConfigReader {
     }
 
     public String getProperty(String key) {
+        String value = properties.getProperty(key);
+        if (value == null) {
+            throw new IllegalArgumentException("There is no value for key: " + key);
+        }
         return properties.getProperty(key);
+    }
+
+    public Map<String, String> getProperties(String... keys) {
+        Map<String, String> propertyMap = new HashMap<>();
+        for (String key : keys) {
+            propertyMap.put(key, getProperty(key));
+        }
+        return propertyMap;
     }
 }

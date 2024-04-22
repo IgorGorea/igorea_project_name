@@ -1,23 +1,42 @@
 package ui.context;
 
-import io.cucumber.java.DataTableType;
-import ui.actions.DriverActions;
+import ui.utils.ConfigReader;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
-public class ScenarioContext extends DriverActions {
-    protected ConfigReader configReader;
-    @DataTableType(replaceWithEmptyString = "<empty>")
-    public String stringType(String cell) {
-        return cell;
+public class ScenarioContext {
+    ConfigReader configReader;
+    private static ScenarioContext instance;
+    private Map<ObjectKeys, Object> scenarioData;
+
+    public ScenarioContext() {
+        this.scenarioData = new HashMap<>();
     }
 
-//    private Map<String,String> scenarioData;
-//    private ScenarioContext(){
-//
-//    }
-//    public static Map<String,Object> getScenarioData() {
-//        return Map<String,Object>;
-//    }
+    public static ScenarioContext getScenarioInstance() {
+        if (instance == null) {
+            instance = new ScenarioContext();
+        }
+        return instance;
+    }
+
+    public ConfigReader getConfigReader() {
+        if (configReader == null)
+            configReader = new ConfigReader();
+        return configReader;
+    }
+
+    public void setData(ObjectKeys key, Object value) {
+        scenarioData.put(key, value);
+    }
+
+    public Object getData(ObjectKeys key) {
+        return scenarioData.get(key);
+    }
+
+    public void resetContext() {
+        scenarioData.clear();
+    }
 }

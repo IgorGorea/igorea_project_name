@@ -1,60 +1,85 @@
 package ui.cfg;
 
-import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.ie.InternetExplorerDriver;
-import ui.actions.DriverActions;
-import io.github.bonigarcia.wdm.WebDriverManager;
-import ui.context.ConfigReader;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import java.time.Duration;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import ui.utils.ConfigReader;
+
+public class BrowserDriver {
+    private static final String BROWSER_TYPE = new ConfigReader().getProperty("browserType").trim().toLowerCase();
+    private static WebDriver driver;
+    protected static final Logger logger = LogManager.getLogger(BrowserDriver.class);
 
 
-public class BrowserDriver extends DriverActions {
-
-    public static WebDriver driver;
-
-    public void setUp(){
+    private static WebDriver setUp() {
         logger.debug("SetUp method is called");
-//        WebDriverManager.chromedriver().clearDriverCache().setup();
-        String browserType = configReader.getProperty("browserType");
-        String chromeBro = configReader.getProperty("chrome");
-        String firefoxBro = configReader.getProperty("firefox");
-        String edgeBro = configReader.getProperty("edge");
-        switch (browserType){
+        switch (BROWSER_TYPE) {
+            case "chrome":
+                driver = getChromeDriver();
+                break;
             case "firefox":
-                System.setProperty("webdriver.chrome.driver", firefoxBro);
+                driver = getFirefoxDriver();
                 break;
             case "edge":
-                System.setProperty("webdriver.chrome.driver", edgeBro);
+                driver = getEdgeDriver();
                 break;
             default:
-                if (!browserType.equals("chrome")){
-                logger.info("Browser type is " + browserType + ", so it is set to default one: Chrome");}
-                System.setProperty("webdriver.chrome.driver", chromeBro);
+                logger.warn("Browser type is " + BROWSER_TYPE + ", so it is set to default one: Chrome");
+                driver = getChromeDriver();
         }
-        driver = browserType.equalsIgnoreCase("chrome") ? new ChromeDriver() :
-                 browserType.equalsIgnoreCase("firefox") ? new FirefoxDriver() :
-                 browserType.equalsIgnoreCase("MSEdge") ? new EdgeDriver() :
-                 new ChromeDriver();
-        logger.debug("Browser Type is:" + browserType);
-        driver.manage().window().maximize();
-        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(10));
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-        setWebDriver(driver);
+//        driver = BROWSER_TYPE.equalsIgnoreCase("chrome") ? new ChromeDriver() :
+//                BROWSER_TYPE.equalsIgnoreCase("firefox") ? new FirefoxDriver() :
+//                        BROWSER_TYPE.equalsIgnoreCase("MSEdge") ? new EdgeDriver() :
+//                                new ChromeDriver();
+        logger.debug("Browser Type is:" + BROWSER_TYPE);
+        return driver;
     }
 
-    public void tearDown(){
-//        if (abstractDriver != null) {
-//            abstractDriver.close();
-//        }
-        if (abstractDriver != null) {
-            abstractDriver.quit();
+    public static WebDriver getDriver() {
+        if (driver == null) {
+            logger.debug("Driver was initialized");
+            return setUp();
         }
-//        String verificationErrorString = verificationErrors.toString();
-//        if (!"".equals(verificationErrorString)) {
-//            fail(verificationErrorString);
-//        }
+        return driver;
     }
+    private static WebDriver getFirefoxDriver(){
+        FirefoxOptions options = new FirefoxOptions();
+        options.addArguments("--headless");
+        return new FirefoxDriver(options);
+    }
+    private static WebDriver getEdgeDriver(){
+        EdgeOptions options = new EdgeOptions();
+        options.addArguments("--headless");
+        return new EdgeDriver(options);
+    }
+    private static WebDriver getChromeDriver(){
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");
+        return new ChromeDriver(options);
+    }
+    public static void clearBrowserCache(WebDriver driver) {
+        driver.manage().deleteAllCookies();
+    }
+    public static void refreshBrowser(WebDriver driver) {
+        driver.navigate().refresh();
+    }
+
+    public static void tearDown() {
+//        if (driver != null) {
+//            driver.close();
+//        }
+        if (driver != null) {
+            driver.quit();
+            driver = null;
+        }
+    }
+
+
+
 }

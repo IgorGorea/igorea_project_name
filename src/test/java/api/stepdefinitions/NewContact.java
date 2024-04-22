@@ -1,39 +1,30 @@
 package api.stepdefinitions;
 
 import api.actions.ApiActions;
-import api.utililities.ContextEnum;
-import io.cucumber.java.en.Given;
+import api.actions.UtilActions;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.restassured.response.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ui.actions.DriverActions;
+import ui.context.ObjectKeys;
+import ui.context.ScenarioContext;
 
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class NewContact extends DriverActions {
+public class NewContact {
     protected static final Logger logger = LogManager.getLogger();
-    protected Response response;
-    ApiActions apiActions = new ApiActions();
+    protected final ApiActions apiActions = new ApiActions();
+    protected final UtilActions utilActions = new UtilActions();
+    protected final ScenarioContext scenarioContext = ScenarioContext.getScenarioInstance();
 
-    @Given("check the server is up")
-    public void healthCheckTheServerIsUp() {
-        //In real project will be changed with HealthCheck
-        apiActions.getContactListHealthCheck();
-    }
 
-    @When("user sends a POST request to contacts with parameters in body:")
-    public void userSendsPOSTRequestToContactsWithParametersInBody(Map<String, String> params) {
+    @When("user creates a new contact through POST request using data:")
+    public void userCreatesNewContactThroughPOSTUsingData(Map<String, String> params) {
         apiActions.postRequestAddContactWithParameters(params);
-    }
-
-    @Then("the POST response status code should be {int}")
-    public void verifyPOSTStatusCode(int expStatusCode) {
-        assertEquals(ContextEnum.POST_STATUS_CODE.getIntValue(), expStatusCode);
     }
 
     @When("user sends a GET request to contact list")
@@ -48,27 +39,24 @@ public class NewContact extends DriverActions {
 
     @Then("the contact list contains {string} in all response bodies")
     public void verifyGETResponseBodyContainsId(String expContent) {
-        boolean body = ContextEnum.FIRST_NAME_PRESENCE.getBoolValue();
+        boolean body = (boolean) scenarioContext.getData(ObjectKeys.FIRST_NAME_PRESENCE);
         logger.info("Is " + expContent + " present in all bodies?");
         assertTrue("Not all bodies contain " + expContent + " in Contact List", body);
     }
 
+    @And("user creates a contact with valid parameters")
+    public void userCreatesAContactWithValidParameters() {
+        apiActions.postRequestAddContactWithParameters(utilActions.newContactCredentials());
+    }
 
     @When("user sends a DELETE request to contact")
     public void userSendsDELETERequestToContact() {
-        logger.debug(ContextEnum.NEW_CONTACT_ID.getValue());
-        apiActions.deleteContactById(ContextEnum.NEW_CONTACT_ID.getValue());
+        logger.debug("The Contact ID to be deleted: " + scenarioContext.getData(ObjectKeys.NEW_CONTACT_ID).toString());
+        apiActions.deleteContactById(scenarioContext.getData(ObjectKeys.NEW_CONTACT_ID).toString());
     }
 
     @Then("the DEL response status code should be {int}")
     public void verifyDeleteReqStatusCode(int expStatusCode) {
-        assertEquals(ContextEnum.DEL_STATUS_CODE.getIntValue(), expStatusCode);
-    }
-
-    @Then("the response body contains {string}")
-    public void verifyResponseBodyContainsSuccess(String expContent) {
-        String body = apiActions.getResponseBody();
-        logger.info("Is " + expContent + " present in the body: " + body.contains(expContent));
-        assertTrue("Response body does not contain " + expContent, body.contains(expContent));
+        assertEquals((int) scenarioContext.getData(ObjectKeys.DEL_CONTACT_STATUS_CODE), expStatusCode);
     }
 }

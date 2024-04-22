@@ -1,17 +1,15 @@
 package ui.stepdefinitions;
 
-import io.cucumber.datatable.DataTable;
-import io.cucumber.java.Transpose;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import ui.actions.DriverActions;
-import ui.actions.SignUpStepsActions;
-import ui.context.ConfigReader;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hamcrest.MatcherAssert;
-import org.junit.Assert;
+import org.openqa.selenium.WebDriver;
+import ui.utils.ConfigReader;
+import ui.context.ObjectKeys;
+import ui.context.ScenarioContext;
 import ui.pages.SignUpPage;
 
 import java.util.Map;
@@ -19,56 +17,48 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-//TODO Css selector plugin check and apply if wanted
-public class SignUpSteps extends DriverActions {
+public class SignUpSteps {
+    protected static final Logger logger = LogManager.getLogger(SignUpSteps.class);
+    private ScenarioContext scenarioContext = ScenarioContext.getScenarioInstance();
+    private final ConfigReader configReader = new ConfigReader();
+    private final SignUpPage signUpPage = new SignUpPage((WebDriver) scenarioContext.getData(ObjectKeys.WEB_DRIVER));
 
-
-    private final SignUpStepsActions signUpStepsActions = new SignUpStepsActions();
-
-    @Given("sign up page is opened in chrome")
-    public void signUpPageIsOpenedInChrome() {
-        String signUpPageUrl = configReader.getProperty("signup.page");
-        openPage(signUpPageUrl);
+    @Given("sign up page is opened")
+    public void signUpPageIsOpened() {
+        signUpPage.openPage((WebDriver) scenarioContext.getData(ObjectKeys.WEB_DRIVER), configReader.getProperty("signup.page"));
     }
 
-    @When("user registers with the valid credentials")
-    public void userRegistersWithTheValidCredentials() {
+    @When("user submits valid credentials")
+    public void userSubmitsValidCredentials() {
         logger.info("The next step will use these random credentials:");
-        signUpStepsActions.introducingRandomCredentials();
-        //TODO Refactor and disrupt action circle
-        signUpStepsActions.signUpPage.signUpSubmit();
-        //TODO add log for credentials
+        signUpPage.submitValidCredentials();
     }
 
     @When("user registers with the following credentials:")
     public void userRegistersWithTheFollowingCredentials(Map<String, String> credTable) {
-        signUpStepsActions.introducingCredentials(credTable);
-        signUpStepsActions.signUpPage.signUpSubmit();
+        signUpPage.submitWithSignUpCredentials(credTable);
     }
 
-    @Then("the user is successfully created")
-    public void theUserIsSuccessfullyCreated() {
-        MatcherAssert.assertThat(SignUpPage.logout_button_is_present(), is("Logout"));
-
+    @Then("user is successfully created")
+    public void userIsSuccessfullyCreated() {
+        MatcherAssert.assertThat(signUpPage.logoutIsPresent(), is("Logout"));
     }
 
     @When("user cancels with the following credentials:")
     public void userCancelsWithTheFollowingCredentials(Map<String, String> credTable) {
         logger.info("The next step will use these random credentials:");
-        signUpStepsActions.introducingCredentials(credTable);
-        signUpStepsActions.signUpPage.press_signUp_cancel_button();
+        signUpPage.cancelWithSignUpCredentials(credTable);
     }
 
     @Then("the main page is opened")
     public void theMainPageIsOpened() {
-        assertThat(SignUpPage.signUp_button_is_present(), is("Sign up"));
-        logger.info(abstractDriver.getCurrentUrl());
+        assertThat(signUpPage.signUpIsPresent(), is("Sign up"));
+        signUpPage.assertThatPageIsOpened(scenarioContext.getConfigReader().getProperty("login.page"));
     }
 
-    @Then("the error on sign up page appeared:")
-    public void theErrorOnSignUpPageAppeared(Map<String, String> credTable) {
-        assertThat(SignUpPage.error_message_is_present(), is("User validation failed: " + credTable.get("ErrorMessage")));
-
+    @Then("the error on sign up page is displayed:")
+    public void theErrorOnSignUpPageIsDisplayed(Map<String, String> credTable) {
+        assertThat(signUpPage.errorMessageIsPresent(), is("User validation failed: " + credTable.get("ErrorMessage")));
     }
 
 }
