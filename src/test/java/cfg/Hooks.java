@@ -1,11 +1,11 @@
 package cfg;
 
 import api.actions.ApiActions;
+import context.ObjectKeys;
+import context.ScenarioContext;
 import io.cucumber.java.*;
 import org.openqa.selenium.WebDriver;
 import utililities.ConfigReader;
-import context.ObjectKeys;
-import context.ScenarioContext;
 
 import java.time.Duration;
 
@@ -41,6 +41,7 @@ public class Hooks {
     @After("@API")
     public void afterAPI() {
         apiActions.deleteUserByBearer();
+        scenarioContext.resetContext();
     }
     @After("@UI")
     public void afterUI() {

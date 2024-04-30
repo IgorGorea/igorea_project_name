@@ -1,9 +1,15 @@
 package utililities;
 
+import api.actions.ApiActions;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 public class JsonParser {
+    protected static final Logger logger = LogManager.getLogger(ApiActions.class);
+
     public String extractValueFromResponseBody(String responseBody, String fieldName) {
         try {
             // It uses ObjectMapper to parse the response body into a JSON object
@@ -18,6 +24,7 @@ public class JsonParser {
             return fieldValue.asText();
 
         } catch (Exception e) {
+            logger.error("The extractor has crashed due to error:");
             e.printStackTrace();
             return null;
         }
@@ -41,8 +48,10 @@ public class JsonParser {
             return fieldValue.asText();
 
         } catch (Exception e) {
+            logger.error("The extractor has crashed due to error:");
             e.printStackTrace();
             return null;
         }
     }
+
 }

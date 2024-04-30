@@ -15,7 +15,7 @@ public class WaitUtilities {
         try {
             Awaitility.await().atMost(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
                     .until(element::isDisplayed);
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             throw new NoSuchElementException("Element was not displayed within the timeout period", e);
         }
     }
@@ -25,7 +25,7 @@ public class WaitUtilities {
             Awaitility.await().ignoreExceptions()
                     .atMost(timeoutInSeconds, TimeUnit.SECONDS)
                     .until(element::isDisplayed);
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             throw new NoSuchElementException("Element was not displayed within the timeout period", e);
         }
     }
@@ -36,7 +36,7 @@ public class WaitUtilities {
                     .pollInterval(pollIntervalInSecs, TimeUnit.SECONDS)
                     .atMost(timeoutInSeconds, TimeUnit.SECONDS)
                     .until(element::isDisplayed);
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             throw new NoSuchElementException("Element was not displayed within the timeout period", e);
         }
     }

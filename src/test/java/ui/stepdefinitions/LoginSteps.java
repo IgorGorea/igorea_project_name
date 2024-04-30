@@ -1,15 +1,14 @@
 package ui.stepdefinitions;
 
-import io.cucumber.java.en.And;
+import context.ObjectKeys;
+import context.ScenarioContext;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.hamcrest.MatcherAssert;
 import org.openqa.selenium.WebDriver;
-import utililities.ConfigReader;
-import context.ObjectKeys;
-import context.ScenarioContext;
 import ui.pages.LoginPage;
+import utililities.ConfigReader;
 
 import static org.hamcrest.Matchers.is;
 
@@ -29,11 +28,6 @@ public class LoginSteps {
         loginPage.logout();
     }
 
-    @And("login page is opened in chrome")
-    public void loginPageIsOpenedInChrome() {
-
-    }
-
     @When("user submits created credentials")
     public void userSubmitsCreatedCredentials() {
         loginPage.submitLoginCredentials();
@@ -47,13 +41,12 @@ public class LoginSteps {
 
     @When("user submits created credentials on login page")
     public void userSubmitsCreatedCredentialsOnLoginPage() {
-        loginPageIsOpenedInChrome();
         loginPage.submitLoginCredentials();
     }
 
     @Then("there is created contact with {string}")
-    public void thereIsCreatedContactWith(String nameCheck) {
-        MatcherAssert.assertThat(loginPage.firstContactName(), is(nameCheck));
+    public void thereIsCreatedContactWith(String nameToCheck) {
+        MatcherAssert.assertThat(loginPage.firstContactName(), is(nameToCheck));
     }
 
 }

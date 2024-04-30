@@ -14,6 +14,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static cfg.BrowserDriver.logger;
+
 public class ScreenshotUtils {
     private String stepName;
     private WebDriver driver = BrowserDriver.getDriver();
@@ -46,6 +48,7 @@ public class ScreenshotUtils {
             Files.copy(source.toPath(), Paths.get(screenshotPath));
 
         } catch (IOException e) {
+            logger.error("Screenshot was not created due to IOException");
             e.printStackTrace();
         }
     }
@@ -75,7 +78,7 @@ public class ScreenshotUtils {
         String screenshotsDirectoryPath = "./target/screenshots/";
         String screenshotRetentionPeriodProperty = configReader.getProperty("screenshotRetentionPeriodInDays");
         if (screenshotRetentionPeriodProperty == null) {
-            System.out.println("Screenshot retention period not found in properties file.");
+            logger.error("Screenshot retention period not found in properties file.");
             return;
         }
         int screenshotRetentionPeriod = Integer.parseInt(screenshotRetentionPeriodProperty);
@@ -90,9 +93,10 @@ public class ScreenshotUtils {
                         LocalDate directoryDate = LocalDate.parse(dateDirectory.getName(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                         if (directoryDate.isBefore(thresholdDate)) {
                             deleteDirectory(dateDirectory);
-                            System.out.println("Deleted directory: " + dateDirectory.getAbsolutePath());
+                            logger.debug("Deleted directory: " + dateDirectory.getAbsolutePath());
                         }
                     } catch (Exception e) {
+                        logger.error("Old screenshots directory was not deleted due to the error:");
                         e.printStackTrace();
                     }
                 }
@@ -119,6 +123,7 @@ public class ScreenshotUtils {
                 }
             });
         } catch (IOException e) {
+            logger.error("The path to the screenshot directory is set with errors:");
             e.printStackTrace();
         }
     }

@@ -7,8 +7,6 @@ public enum ObjectKeys {
         WEB_DRIVER,
         FIRST_NAME,
         LAST_NAME,
-        EMAIL,
-        PASSWORD,
         GET_STATUS_CODE,
         POST_STATUS_CODE,
         DEL_USER_STATUS_CODE,
@@ -20,7 +18,7 @@ public enum ObjectKeys {
         L_USER_NAME,
         USER_EMAIL,
         USER_PASS,
-        RESPONSE;
+        RESPONSE
 }
 
 

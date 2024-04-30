@@ -1,12 +1,14 @@
 package api.actions;
 
+import api.dtos.requests.ContactRequest;
+import api.dtos.responses.ContactResponse;
+import context.ObjectKeys;
+import context.ScenarioContext;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import context.ObjectKeys;
-import context.ScenarioContext;
 import utililities.ConfigReader;
 
 import java.util.List;
@@ -100,6 +102,28 @@ public class ApiActions {
                 .post();
         response.then().log().all();
 
+        String contactId = utilActions.getParamFromJson(response, "_id");
+        scenarioContext.setData(ObjectKeys.NEW_CONTACT_ID, contactId);
+        logger.info("Json parser got the value: " + contactId);
+        scenarioContext.setData(ObjectKeys.POST_STATUS_CODE, response.getStatusCode());
+        logger.debug("POST Status code:" + response.getStatusCode());
+        scenarioContext.setData(ObjectKeys.RESPONSE, response.then().extract().response());
+    }
+    public void postRequestAddContactWithParameters() {
+        baseURI = configReader.getProperty("baseURI");
+        basePath = "/contacts";
+        logger.info("Current URI and base path: " + baseURI + basePath);
+        ContactRequest reqBody = new ContactRequest();
+        utilActions.newContactCredentials(reqBody);
+        response = responseMethod()
+                .contentType(ContentType.JSON)
+                .body(reqBody)
+                .log()
+                .all()
+                .post();
+        response.then().log().all();
+        ContactResponse respBody = response.body().as(ContactResponse.class);
+        logger.debug("Response body: " + respBody.toString());
         String contactId = utilActions.getParamFromJson(response, "_id");
         scenarioContext.setData(ObjectKeys.NEW_CONTACT_ID, contactId);
         logger.info("Json parser got the value: " + contactId);
