@@ -6,6 +6,10 @@ public class UserRequest {
     private String email;
     private String password;
 
+    public UserRequest() {
+    }
+
+
     public UserRequest(String firstName, String lastName, String email, String password) {
 
         this.firstName = firstName;
@@ -37,6 +41,7 @@ public class UserRequest {
     public void setEmail(String email) {
         this.email = email;
     }
+
     public String getPassword() {
         return password;
     }

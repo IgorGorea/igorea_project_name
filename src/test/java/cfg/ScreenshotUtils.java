@@ -1,6 +1,7 @@
 package cfg;
 
 import io.cucumber.java.Scenario;
+import org.apache.logging.log4j.ThreadContext;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -21,6 +22,18 @@ public class ScreenshotUtils {
     private String stepName;
     private WebDriver driver = BrowserDriver.getDriver();
 
+    public String gettingScreensPath() {
+        String currentDate = getCurrentDateTime("yyyy-MM-dd");
+        String baseDirPath = "./target/screenshots/" + currentDate + "/";
+        createDirectory(baseDirPath);
+        String runStartTime = getCurrentDateTime("HH.mm");
+        String baseDirPathByHour = baseDirPath + runStartTime + "/";
+        createDirectory(baseDirPathByHour);
+
+        String stepDirPath = baseDirPathByHour + stepName + "/";
+        createDirectory(stepDirPath);
+        return stepDirPath;
+    }
     protected void captureScreen(String stepName, boolean isNegativeScenario, Scenario scenario) {
         try {
             TakesScreenshot screenshotDriver = (TakesScreenshot) driver;
@@ -29,28 +42,19 @@ public class ScreenshotUtils {
             byte[] screenshot = screenshotDriver.getScreenshotAs(OutputType.BYTES);
             scenario.attach(screenshot,"image/png", "Screenshot for " + stepName);
 
-            String currentDate = getCurrentDateTime("yyyy-MM-dd");
-            String baseDirPath = "./target/screenshots/" + currentDate + "/";
-            createDirectory(baseDirPath);
-            String runStartTime = getCurrentDateTime("HH.mm");
-            String baseDirPathByHour = baseDirPath + runStartTime + "/";
-            createDirectory(baseDirPathByHour);
-
-            String stepDirPath = baseDirPathByHour + stepName + "/";
-            createDirectory(stepDirPath);
+            String screenshotPath = ThreadContext.get("screensPath") + "screenshots/";
+            createDirectory(screenshotPath);
 
             if (isNegativeScenario) {
                 stepName += "_ErrorMes";
             }
 
             String screenshotName = stepName + "_" + getCurrentDateTime("HHmmssSSS") + ".png";
-            String screenshotPath = stepDirPath + screenshotName;
-
+            screenshotPath += screenshotName;
             Files.copy(source.toPath(), Paths.get(screenshotPath));
 
         } catch (IOException e) {
             logger.error("Screenshot was not created due to IOException. ",e);
-
         }
     }
 

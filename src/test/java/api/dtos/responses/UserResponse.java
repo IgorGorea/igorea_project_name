@@ -1,10 +1,14 @@
 package api.dtos.responses;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class UserResponse {
 
     private User user;
     private String token;
 
+    public UserResponse() {
+    }
 
     public UserResponse(User user, String token) {
         this.user = user;
@@ -28,12 +32,16 @@ public class UserResponse {
     }
 
     public static class User {
+        @JsonProperty("_id")
         private String id;
         private String firstName;
         private String lastName;
         private String email;
+        @JsonProperty("__v")
         private int version;
 
+        public User() {
+        }
 
         public User(String id, String firstName, String lastName, String email, int version) {
             this.id = id;

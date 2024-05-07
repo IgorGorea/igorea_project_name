@@ -6,10 +6,4 @@ public class CustomExceptions {
             super(message, cause);
         }
     }
-
-    public static class ResponseProcessingException extends RuntimeException {
-        public ResponseProcessingException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
 }

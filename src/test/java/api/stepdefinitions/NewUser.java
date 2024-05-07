@@ -2,11 +2,11 @@ package api.stepdefinitions;
 
 import api.actions.ApiActions;
 import api.actions.UtilActions;
+import context.ObjectKeys;
+import context.ScenarioContext;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import context.ObjectKeys;
-import context.ScenarioContext;
 
 import static org.junit.Assert.assertEquals;
 
@@ -24,7 +24,7 @@ public class NewUser {
     @Given("admin has created a new user")
     @When("admin creates a new user")
     public void adminCreatesANewUser() {
-        apiActions.postRequestAddUserWithParameters(utilActions.newUserCredentials());
+        apiActions.postRequestAddUserWithParameters();
     }
 
     @Then("the POST response status code should be {int}")

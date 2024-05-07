@@ -18,7 +18,7 @@ public class CustomParams {
         return cell;
     }
 
-    public void sendKeysWithParam(WebElement element, String text) { //TODO read about default parameters (generic types var args)
+    public void sendKeysWithParam(WebElement element, String text) {
         sendKeysWithParam(element,text,DEFAULT_TIMEOUT);
     }
 

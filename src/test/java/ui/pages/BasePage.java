@@ -1,16 +1,15 @@
 package ui.pages;
 
+import cfg.CustomParams;
 import com.github.javafaker.Faker;
+import context.ObjectKeys;
+import context.ScenarioContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import cfg.BrowserDriver;
-import cfg.CustomParams;
-import context.ObjectKeys;
-import context.ScenarioContext;
 import utililities.WaitUtilities;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -78,14 +77,6 @@ public abstract class BasePage {
     public void openPage(WebDriver driver, String url) {
         driver.navigate().to(url);
         logger.info("The " + url + " has been opened");
-    }
-
-    public void refreshThePage(WebDriver driver) {
-        BrowserDriver.refreshBrowser(driver);
-    }
-
-    public void clearBrowserCache(WebDriver driver) {
-        BrowserDriver.clearBrowserCache(driver);
     }
 
     public void assertThatPageIsOpened(String url) {
