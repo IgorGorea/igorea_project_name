@@ -1,4 +1,4 @@
-#@NotCyrnats-001 @UI @SmokeTest @Run
+@NotCyrnats-001 @UI @SmokeTest @Run
 Feature: Sign up functionality
 
   Background:

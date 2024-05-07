@@ -33,14 +33,11 @@ public class BrowserDriver {
                 logger.warn("Browser type is " + BROWSER_TYPE + ", so it is set to default one: Chrome");
                 driver = getChromeDriver();
         }
-//        driver = BROWSER_TYPE.equalsIgnoreCase("chrome") ? new ChromeDriver() :
-//                BROWSER_TYPE.equalsIgnoreCase("firefox") ? new FirefoxDriver() :
-//                        BROWSER_TYPE.equalsIgnoreCase("MSEdge") ? new EdgeDriver() :
-//                                new ChromeDriver();
         logger.debug("Browser Type is:" + BROWSER_TYPE);
         return driver;
     }
 
+    //TODO read about singleton
     public static WebDriver getDriver() {
         if (driver == null) {
             logger.debug("Driver was initialized");
@@ -48,38 +45,41 @@ public class BrowserDriver {
         }
         return driver;
     }
-    private static WebDriver getFirefoxDriver(){
+
+    private static WebDriver getFirefoxDriver() {
         FirefoxOptions options = new FirefoxOptions();
         options.addArguments("--headless");
         return new FirefoxDriver(options);
     }
-    private static WebDriver getEdgeDriver(){
+
+    private static WebDriver getEdgeDriver() {
         EdgeOptions options = new EdgeOptions();
         options.addArguments("--headless");
         return new EdgeDriver(options);
     }
-    private static WebDriver getChromeDriver(){
+
+    private static WebDriver getChromeDriver() {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
         return new ChromeDriver(options);
     }
+
     public static void clearBrowserCache(WebDriver driver) {
-        driver.manage().deleteAllCookies();
+        if (driver != null) {
+            driver.manage().deleteAllCookies();
+        }
     }
+
     public static void refreshBrowser(WebDriver driver) {
         driver.navigate().refresh();
     }
 
     public static void tearDown() {
-//        if (driver != null) {
-//            driver.close();
-//        }
         if (driver != null) {
             driver.quit();
             driver = null;
         }
     }
-
 
 
 }

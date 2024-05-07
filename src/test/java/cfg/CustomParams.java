@@ -18,14 +18,8 @@ public class CustomParams {
         return cell;
     }
 
-    public void sendKeysWithParam(WebElement element, String text) {
-        waitUtilities.waitToBeDisplayed(element,DEFAULT_TIMEOUT, 1);
-        element.sendKeys(text);
-        if (element.getAccessibleName() != null) {
-            logger.info("Sending key: " + text + " to element: " + element.getAccessibleName());
-        } else {
-            logger.info("Sending key: " + text + " to element with no accessible name");
-        }
+    public void sendKeysWithParam(WebElement element, String text) { //TODO read about default parameters (generic types var args)
+        sendKeysWithParam(element,text,DEFAULT_TIMEOUT);
     }
 
     public void sendKeysWithParam(WebElement element, String text, int timeoutInSeconds) {

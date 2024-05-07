@@ -43,7 +43,7 @@ public abstract class BasePage {
     }
 
     public void enterEmail(String em) {
-        customParams.sendKeysWithParam(email, em, 15);
+        customParams.sendKeysWithParam(email, em);
     }
 
     public void enterPassword(String pass) {

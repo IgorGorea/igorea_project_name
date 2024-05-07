@@ -41,10 +41,14 @@ public class Hooks {
     @After("@API")
     public void afterAPI() {
         apiActions.deleteUserByBearer();
-        scenarioContext.resetContext();
     }
     @After("@UI")
-    public void afterUI() {
+    public void afterUI(){
+        BrowserDriver.clearBrowserCache((WebDriver) scenarioContext.getData(ObjectKeys.WEB_DRIVER));
+    }
+
+    @AfterAll
+    public static void afterAll() {
         BrowserDriver.tearDown();
     }
 }

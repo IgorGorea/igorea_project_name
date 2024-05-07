@@ -57,8 +57,9 @@ public class ApiActions {
             } else {
                 logger.error("GET request to contacts endpoint failed. Status code: " + response.getStatusCode());
             }
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             logger.error("An exception occurred while sending GET request to contacts endpoint: " + e.getMessage());
+            throw new NullPointerException();
         }
     }
 
@@ -92,7 +93,7 @@ public class ApiActions {
 
     public void postRequestAddContactWithParameters(Map<String, String> params) {
         baseURI = configReader.getProperty("baseURI");
-        basePath = "/contacts";
+        basePath = "/contacts"; //
         logger.info("Current URI and base path: " + baseURI + basePath);
         response = responseMethod()
                 .contentType(ContentType.JSON)
@@ -148,6 +149,7 @@ public class ApiActions {
 
     public void postRequestAddUserWithParameters(Map<String, String> params) {
         baseURI = configReader.getProperty("baseURI");
+        //TODO do not do hardcode path
         basePath = "/users";
         logger.info("Current URI and base path: " + baseURI + basePath);
         response = responseMethodWOBearer()

@@ -13,6 +13,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import static cfg.BrowserDriver.logger;
 
@@ -48,8 +49,8 @@ public class ScreenshotUtils {
             Files.copy(source.toPath(), Paths.get(screenshotPath));
 
         } catch (IOException e) {
-            logger.error("Screenshot was not created due to IOException");
-            e.printStackTrace();
+            logger.error("Screenshot was not created due to IOException. ",e);
+
         }
     }
 
@@ -79,6 +80,7 @@ public class ScreenshotUtils {
         String screenshotRetentionPeriodProperty = configReader.getProperty("screenshotRetentionPeriodInDays");
         if (screenshotRetentionPeriodProperty == null) {
             logger.error("Screenshot retention period not found in properties file.");
+            screenshotRetentionPeriodProperty = "7";
             return;
         }
         int screenshotRetentionPeriod = Integer.parseInt(screenshotRetentionPeriodProperty);
@@ -95,9 +97,8 @@ public class ScreenshotUtils {
                             deleteDirectory(dateDirectory);
                             logger.debug("Deleted directory: " + dateDirectory.getAbsolutePath());
                         }
-                    } catch (Exception e) {
-                        logger.error("Old screenshots directory was not deleted due to the error:");
-                        e.printStackTrace();
+                    } catch (DateTimeParseException e) {
+                        logger.error("Error parsing directory name as date: " + dateDirectory.getName());
                     }
                 }
             }
@@ -123,8 +124,7 @@ public class ScreenshotUtils {
                 }
             });
         } catch (IOException e) {
-            logger.error("The path to the screenshot directory is set with errors:");
-            e.printStackTrace();
+            logger.error("Error deleting directory: " + directory.getAbsolutePath(), e);
         }
     }
 }
