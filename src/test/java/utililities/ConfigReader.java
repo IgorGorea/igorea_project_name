@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Properties;
 
 public class ConfigReader {
+
     private final Properties properties;
 
     public ConfigReader() {
@@ -16,7 +17,7 @@ public class ConfigReader {
             properties.load(inputStream);
             inputStream.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("e.printStackTrace");
         }
     }
 

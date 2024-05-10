@@ -2,10 +2,10 @@ package ui.pages;
 
 import cfg.CustomParams;
 import com.github.javafaker.Faker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import context.ObjectKeys;
 import context.ScenarioContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -16,10 +16,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public abstract class BasePage {
     protected ScenarioContext scenarioContext = ScenarioContext.getScenarioInstance();
-    protected PageObjectFactory pageObjectFactory = new PageObjectFactory((WebDriver) scenarioContext.getData(ObjectKeys.WEB_DRIVER));
     protected CustomParams customParams = new CustomParams();
     protected WaitUtilities waitUtilities = new WaitUtilities();
-    protected final Logger logger = LogManager.getLogger(BasePage.class);
+    protected final Logger logger = LoggerFactory.getLogger(BasePage.class);
     protected final Faker faker = new Faker();
 
     @FindBy(xpath = "//input[@id='email']")

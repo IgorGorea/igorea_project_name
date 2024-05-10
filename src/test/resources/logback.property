@@ -1,0 +1,41 @@
+status = INFO
+
+# Define properties
+property.logDir = ${screensPath}
+
+# Define appenders
+appender.AllLogsFileAppender = ch.qos.logback.core.rolling.RollingFileAppender
+appender.AllLogsFileAppender.name = AllLogsFileAppender
+appender.AllLogsFileAppender.file = ${logDir}/all/all_logs-${scenarioName}-%d{MM-dd-yyyy-HH-mm-ss}.log
+appender.AllLogsFileAppender.encoder = ch.qos.logback.classic.encoder.PatternLayoutEncoder
+appender.AllLogsFileAppender.encoder.pattern = %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+appender.AllLogsFileAppender.rollingPolicy = ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy
+appender.AllLogsFileAppender.rollingPolicy.fileNamePattern = ${logDir}/all/all_logs-%d{MM-dd-yyyy}-%i.log.gz
+appender.AllLogsFileAppender.rollingPolicy.maxFileSize = 3MB
+appender.AllLogsFileAppender.rollingPolicy.maxHistory = 10
+appender.AllLogsFileAppender.triggeringPolicy = ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy
+
+appender.InfoLogsFileAppender = ch.qos.logback.core.rolling.RollingFileAppender
+appender.InfoLogsFileAppender.name = InfoLogsFileAppender
+appender.InfoLogsFileAppender.file = ${logDir}/info/info_logs-${scenarioName}-%d{MM-dd-yyyy-HH-mm-ss}.log
+appender.InfoLogsFileAppender.encoder = ch.qos.logback.classic.encoder.PatternLayoutEncoder
+appender.InfoLogsFileAppender.encoder.pattern = %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+appender.InfoLogsFileAppender.filter.threshold = INFO
+appender.InfoLogsFileAppender.rollingPolicy = ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy
+appender.InfoLogsFileAppender.rollingPolicy.fileNamePattern = ${logDir}/info/info_logs-%d{MM-dd-yyyy}-%i.log.gz
+appender.InfoLogsFileAppender.rollingPolicy.maxFileSize = 3MB
+appender.InfoLogsFileAppender.rollingPolicy.maxHistory = 10
+appender.InfoLogsFileAppender.triggeringPolicy = ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy
+
+appender.ConsoleAppender = ch.qos.logback.core.ConsoleAppender
+appender.ConsoleAppender.name = Console
+appender.ConsoleAppender.target = System.out
+appender.ConsoleAppender.encoder = ch.qos.logback.classic.encoder.PatternLayoutEncoder
+appender.ConsoleAppender.encoder.pattern = %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+
+# Define loggers
+rootLogger.level = DEBUG
+rootLogger.appenderRefs = AllLogsFileAppender, InfoLogsFileAppender, ConsoleAppender
+rootLogger.appenderRef.AllLogsFileAppender = ${appender.AllLogsFileAppender}
+rootLogger.appenderRef.InfoLogsFileAppender = ${appender.InfoLogsFileAppender}
+rootLogger.appenderRef.ConsoleAppender = ${appender.ConsoleAppender}

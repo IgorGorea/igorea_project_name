@@ -13,7 +13,6 @@ import static org.junit.Assert.assertEquals;
 public class NewUser {
     protected final ScenarioContext scenarioContext = ScenarioContext.getScenarioInstance();
     protected final ApiActions apiActions = new ApiActions();
-    protected final UtilActions utilActions = new UtilActions();
 
     @Given("the server is up")
     public void healthCheckTheServerIsUp() {

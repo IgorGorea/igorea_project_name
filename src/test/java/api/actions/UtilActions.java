@@ -18,16 +18,6 @@ public class UtilActions {
     private final JsonParser jsonParser = new JsonParser();
     private final ScenarioContext scenarioContext = ScenarioContext.getScenarioInstance();
 
-    public Map<String, String> newUserCredentials() {
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("firstName", faker.name().firstName());
-        parameters.put("lastName", faker.name().lastName());
-        parameters.put("email", faker.bothify("????##@gmail.com"));
-        parameters.put("password", faker.number().digits(10));
-        scenarioContext.setData(ObjectKeys.USER_PASS, parameters.get("password"));
-        return parameters;
-    }
-
     public void newUserCredentials(UserRequest conObject) {
         conObject.setFirstName(faker.name().firstName());
         conObject.setLastName(faker.name().lastName());

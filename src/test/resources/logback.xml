@@ -1,0 +1,47 @@
+<configuration>
+
+    <!-- Define properties -->
+    <property name="logDir" value="${screensPath}" />
+
+    <!-- Define appenders -->
+    <appender name="AllLogsFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logDir}/all/all_logs-${scenarioName}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logDir}/all/all_logs-%d{MM-dd-yyyy}-%i.log.gz</fileNamePattern>
+            <maxFileSize>3MB</maxFileSize>
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="InfoLogsFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logDir}/info/info_logs-${scenarioName}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logDir}/info/info_logs-%d{MM-dd-yyyy}-%i.log.gz</fileNamePattern>
+            <maxFileSize>3MB</maxFileSize>
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+    </appender>
+
+    <appender name="ConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Define loggers -->
+    <root level="DEBUG">
+        <appender-ref ref="AllLogsFileAppender" />
+        <appender-ref ref="InfoLogsFileAppender" />
+        <appender-ref ref="ConsoleAppender" />
+    </root>
+
+</configuration>

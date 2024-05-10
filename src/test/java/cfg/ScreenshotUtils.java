@@ -1,7 +1,6 @@
 package cfg;
 
 import io.cucumber.java.Scenario;
-import org.apache.logging.log4j.ThreadContext;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -84,7 +83,6 @@ public class ScreenshotUtils {
         String screenshotRetentionPeriodProperty = configReader.getProperty("screenshotRetentionPeriodInDays");
         if (screenshotRetentionPeriodProperty == null) {
             logger.error("Screenshot retention period not found in properties file.");
-            screenshotRetentionPeriodProperty = "7";
             return;
         }
         int screenshotRetentionPeriod = Integer.parseInt(screenshotRetentionPeriodProperty);
