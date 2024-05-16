@@ -1,7 +1,6 @@
 @API @Smoke @Run
 Feature: API Tests
 
-
   Scenario: Create New User
     Given the server is up
     When admin creates a new user

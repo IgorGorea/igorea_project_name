@@ -33,7 +33,7 @@ public class ApiActions {
     }
 
     private RequestSpecification responseMethod() {
-        String token = scenarioContext.getData(ObjectKeys.TOKEN_BEARER).toString();
+        String token = ((UserResponse) scenarioContext.getData((ObjectKeys.NEW_USER))).getToken();
         return given().header("Authorization", "Bearer " + token)
                 .when();
     }
@@ -166,10 +166,8 @@ public class ApiActions {
                 .post();
         response.then().log().all();
         UserResponse respBody = response.body().as(UserResponse.class);
-        String token = respBody.getToken();//TODO to save as object, not partial fields
-        scenarioContext.setData(ObjectKeys.TOKEN_BEARER, token);
-        scenarioContext.setData(ObjectKeys.F_USER_NAME, respBody.getUser().getFirstName());
-        scenarioContext.setData(ObjectKeys.L_USER_NAME, respBody.getUser().getLastName());
+        String token = respBody.getToken();
+        scenarioContext.setData(ObjectKeys.NEW_USER, respBody);
         scenarioContext.setData(ObjectKeys.USER_EMAIL, respBody.getUser().getEmail());
         logger.debug("POST Status code:" + response.getStatusCode());
         scenarioContext.setData(ObjectKeys.POST_STATUS_CODE, response.getStatusCode());
@@ -181,8 +179,8 @@ public class ApiActions {
     public void deleteUserByToken() {
         baseURI = configReader.getProperty("baseURI");
         basePath = configReader.getProperty("baseMeUserPath");
-        logger.debug("Will be deleted " + scenarioContext.getData(ObjectKeys.F_USER_NAME).toString()
-                + " with token:" + scenarioContext.getData(ObjectKeys.TOKEN_BEARER).toString());
+        logger.debug("Will be deleted " + ((UserResponse) scenarioContext.getData((ObjectKeys.NEW_USER))).getUser().getFirstName()
+                + " with token:" + ((UserResponse) scenarioContext.getData((ObjectKeys.NEW_USER))).getToken());
         response = responseMethod()
                 .log()
                 .all()

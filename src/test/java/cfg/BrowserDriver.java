@@ -37,7 +37,6 @@ public class BrowserDriver {
         return driver;
     }
 
-    //TODO read about singleton
     public static WebDriver getDriver() {
         if (driver == null) {
             logger.debug("Driver was initialized");
