@@ -69,10 +69,6 @@ public class BrowserDriver {
         }
     }
 
-    public static void refreshBrowser(WebDriver driver) {
-        driver.navigate().refresh();
-    }
-
     public static void tearDown() {
         if (driver != null) {
             driver.quit();
