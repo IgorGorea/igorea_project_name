@@ -34,9 +34,7 @@ public class Hooks {
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         JoranConfigurator jc = new JoranConfigurator();
         jc.setContext(context);
-        context.reset(); // override default configuration
-        // inject the name of the current application as "application-name"
-        // property of the LoggerContext
+        context.reset();
         context.putProperty("scenarioName", scenario.getName());
         context.putProperty("logDir", screenshotCfg.gettingScreensPath());
         context.putProperty("logDate", screenshotCfg.getCurrentDateTime("yyyy-MM-dd"));
