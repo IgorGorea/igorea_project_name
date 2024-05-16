@@ -18,12 +18,6 @@ public class SignUpPage extends BasePage {
         super(driver);
     }
 
-//    Accessing the element though cssSelector
-//    public void signUp() {
-//        BrowserDriver.getDriver().findElement(By.cssSelector(String.valueOf(signUpButton))).click();
-//    }
-
-
     public String signUpIsPresent() {
         return signUpButton.getText();
     }
