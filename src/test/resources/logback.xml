@@ -1,13 +1,10 @@
 <configuration>
 
-    <!-- Define properties -->
-    <property name="logDir" value="${screensPath}" />
-
     <!-- Define appenders -->
     <appender name="AllLogsFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logDir}/all/all_logs-${scenarioName}.log</file>
+        <file>${logDir}/all/all_logs-${scenarioName}.${logDate}.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${logDir}/all/all_logs-%d{MM-dd-yyyy}-%i.log.gz</fileNamePattern>
+            <fileNamePattern>${logDir}/all/all_logs-${scenarioName}.%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
             <maxFileSize>3MB</maxFileSize>
             <maxHistory>10</maxHistory>
         </rollingPolicy>
@@ -17,9 +14,9 @@
     </appender>
 
     <appender name="InfoLogsFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logDir}/info/info_logs-${scenarioName}.log</file>
+        <file>${logDir}/info/info_logs-${scenarioName}.${logDate}.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${logDir}/info/info_logs-%d{MM-dd-yyyy}-%i.log.gz</fileNamePattern>
+            <fileNamePattern>${logDir}/info/info_logs-${scenarioName}.%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
             <maxFileSize>3MB</maxFileSize>
             <maxHistory>10</maxHistory>
         </rollingPolicy>

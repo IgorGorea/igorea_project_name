@@ -17,13 +17,13 @@ import java.time.format.DateTimeParseException;
 
 import static cfg.BrowserDriver.logger;
 
-public class ScreenshotUtils {
+public class ScreenshotCfg {
     private String stepName;
     private WebDriver driver = BrowserDriver.getDriver();
 
     public String gettingScreensPath() {
         String currentDate = getCurrentDateTime("yyyy-MM-dd");
-        String baseDirPath = "./target/screenshots/" + currentDate + "/";
+        String baseDirPath = "./target/evidence/" + currentDate + "/";
         createDirectory(baseDirPath);
         String runStartTime = getCurrentDateTime("HH.mm");
         String baseDirPathByHour = baseDirPath + runStartTime + "/";
@@ -33,15 +33,16 @@ public class ScreenshotUtils {
         createDirectory(stepDirPath);
         return stepDirPath;
     }
+
     protected void captureScreen(String stepName, boolean isNegativeScenario, Scenario scenario) {
         try {
             TakesScreenshot screenshotDriver = (TakesScreenshot) driver;
             File source = screenshotDriver.getScreenshotAs(OutputType.FILE);
             //For screens in report
             byte[] screenshot = screenshotDriver.getScreenshotAs(OutputType.BYTES);
-            scenario.attach(screenshot,"image/png", "Screenshot for " + stepName);
+            scenario.attach(screenshot, "image/png", "Screenshot for " + stepName);
 
-            String screenshotPath = ThreadContext.get("screensPath") + "screenshots/";
+            String screenshotPath = gettingScreensPath() + "screenshots/";
             createDirectory(screenshotPath);
 
             if (isNegativeScenario) {
@@ -53,16 +54,14 @@ public class ScreenshotUtils {
             Files.copy(source.toPath(), Paths.get(screenshotPath));
 
         } catch (IOException e) {
-            logger.error("Screenshot was not created due to IOException. ",e);
+            logger.error("Screenshot was not created due to IOException. ", e);
         }
     }
 
     public void setStepName(String stepName) {
         this.stepName = stepName;
     }
-    public String getStepName() {
-        return stepName;
-    }
+
     protected String getCurrentDateTime(String pattern) {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern(pattern));
     }

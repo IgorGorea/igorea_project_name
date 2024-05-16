@@ -9,8 +9,8 @@ import context.ScenarioContext;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utililities.ConfigReader;
 
 import java.util.List;
@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 
 public class ApiActions {
     protected ConfigReader configReader = new ConfigReader();
-    protected static final Logger logger = LogManager.getLogger(ApiActions.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ApiActions.class);
     protected ScenarioContext scenarioContext = ScenarioContext.getScenarioInstance();
     private Response response;
     private final UtilActions utilActions = new UtilActions();
@@ -82,7 +82,7 @@ public class ApiActions {
 
     public int getContactListStatusCode() {
         int gStCode = (int) scenarioContext.getData(ObjectKeys.GET_STATUS_CODE);
-        logger.debug(gStCode);
+        logger.debug(String.valueOf(gStCode));
         return gStCode;
     }
 

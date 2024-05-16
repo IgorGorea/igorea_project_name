@@ -1,14 +1,14 @@
 package cfg;
 
 import io.cucumber.java.DataTableType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openqa.selenium.WebElement;
 import utililities.ConfigReader;
 import utililities.WaitUtilities;
 
 public class CustomParams {
-    protected final Logger logger = LogManager.getLogger(CustomParams.class);
+    protected final Logger logger = LoggerFactory.getLogger(CustomParams.class);
     private final WaitUtilities waitUtilities = new WaitUtilities();
     private final ConfigReader configReader = new ConfigReader();
     private final int DEFAULT_TIMEOUT = Integer.parseInt(configReader.getProperty("defaultAwaitTime"));

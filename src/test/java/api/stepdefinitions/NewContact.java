@@ -6,8 +6,8 @@ import context.ScenarioContext;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class NewContact {
-    protected static final Logger logger = LogManager.getLogger();
+    protected static final Logger logger = LoggerFactory.getLogger(NewContact.class);
     protected final ApiActions apiActions = new ApiActions();
     protected final ScenarioContext scenarioContext = ScenarioContext.getScenarioInstance();
 

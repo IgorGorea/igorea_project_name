@@ -1,36 +1,50 @@
 package cfg;
 
 import api.actions.ApiActions;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
 import context.ObjectKeys;
 import context.ScenarioContext;
 import io.cucumber.java.*;
-import org.apache.logging.log4j.ThreadContext;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.openqa.selenium.WebDriver;
 import utililities.ConfigReader;
+import ch.qos.logback.classic.LoggerContext;
+import org.slf4j.LoggerFactory;
+
 
 import java.time.Duration;
 
 
 public class Hooks {
     ApiActions apiActions = new ApiActions();
-    ScreenshotUtils screenshotUtils = new ScreenshotUtils();
+    ScreenshotCfg screenshotCfg = new ScreenshotCfg();
     ScenarioContext scenarioContext = ScenarioContext.getScenarioInstance();
 
     @BeforeAll
     public static void beforeAll() {
         ConfigReader configReader = new ConfigReader();
-        ScreenshotUtils.deleteOldScreenshotsDirectories(configReader);
+        ScreenshotCfg.deleteOldScreenshotsDirectories(configReader);
 
     }
 
     @Before("@UI")
     public void beforeUI(Scenario scenario) {
-        screenshotUtils.setStepName(scenario.getName());
+        screenshotCfg.setStepName(scenario.getName());
 
-        ThreadContext.put("screensPath", screenshotUtils.gettingScreensPath());
-        ThreadContext.put("scenarioName", scenario.getName().trim().replaceAll(" ", "_"));
-        Configurator.reconfigure();
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        JoranConfigurator jc = new JoranConfigurator();
+        jc.setContext(context);
+        context.reset(); // override default configuration
+        // inject the name of the current application as "application-name"
+        // property of the LoggerContext
+        context.putProperty("scenarioName", scenario.getName());
+        context.putProperty("logDir", screenshotCfg.gettingScreensPath());
+        context.putProperty("logDate", screenshotCfg.getCurrentDateTime("yyyy-MM-dd"));
+        try {
+            jc.doConfigure("src/test/resources/logback.xml");
+        } catch (JoranException e) {
+            throw new RuntimeException(e);
+        }
 
         WebDriver driver = BrowserDriver.getDriver();
         driver.manage().window().maximize();
@@ -47,8 +61,8 @@ public class Hooks {
 
     @AfterStep("@UI")
     public void afterStep(Scenario scenario) {
-        boolean isNegativeScenario = screenshotUtils.isNegativeScenario(scenario);
-        screenshotUtils.captureScreen(scenario.getName(), isNegativeScenario, scenario);
+        boolean isNegativeScenario = screenshotCfg.isNegativeScenario(scenario);
+        screenshotCfg.captureScreen(scenario.getName(), isNegativeScenario, scenario);
     }
 
     @After("@API")

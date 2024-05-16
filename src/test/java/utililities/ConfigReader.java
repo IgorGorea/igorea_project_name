@@ -2,12 +2,9 @@ package utililities;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 public class ConfigReader {
-
     private final Properties properties;
 
     public ConfigReader() {
@@ -17,7 +14,7 @@ public class ConfigReader {
             properties.load(inputStream);
             inputStream.close();
         } catch (IOException e) {
-            logger.error("e.printStackTrace");
+            e.printStackTrace();
         }
     }
 
@@ -29,11 +26,4 @@ public class ConfigReader {
         return properties.getProperty(key);
     }
 
-    public Map<String, String> getProperties(String... keys) {
-        Map<String, String> propertyMap = new HashMap<>();
-        for (String key : keys) {
-            propertyMap.put(key, getProperty(key));
-        }
-        return propertyMap;
-    }
 }
