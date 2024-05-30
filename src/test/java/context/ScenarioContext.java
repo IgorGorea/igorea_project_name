@@ -32,8 +32,8 @@ public class ScenarioContext {
         scenarioData.put(key, value);
     }
 
-    public Object getData(ObjectKeys key) {
-        return scenarioData.get(key);
+    public <T> T getData(ObjectKeys key) {
+        return (T) scenarioData.get(key);
     }
 
     public void resetContext() {

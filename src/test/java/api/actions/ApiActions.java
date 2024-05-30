@@ -34,8 +34,7 @@ public class ApiActions {
 
     private RequestSpecification responseMethod() {
         String token = ((UserResponse) scenarioContext.getData((ObjectKeys.NEW_USER))).getToken();
-        return given().header("Authorization", "Bearer " + token)
-                .when();
+        return responseMethod(token);
     }
 
     private RequestSpecification responseMethod(String token) {
@@ -43,12 +42,24 @@ public class ApiActions {
                 .when();
     }
 
+    private Response bodyPostMethod(ContactRequest reqBody){
+        return responseMethod()
+                .contentType(ContentType.JSON)
+                .body(reqBody)
+                .log()
+                .all()
+                .post();
+    }
+    private void baseUriSetting(String pathFromProperties) {
+        baseURI = configReader.getProperty("baseURI");
+        basePath = configReader.getProperty(pathFromProperties);
+        logger.debug("Current URI and base path: " + baseURI + basePath);
+    }
+
     public void getContactListHealthCheck() {
         try {
             String token = configReader.getProperty("token.bearer");
-            baseURI = configReader.getProperty("baseURI");
-            basePath = configReader.getProperty("baseContactsPath");
-            logger.info("Base URI and base path are set to: " + baseURI + basePath);
+            baseUriSetting("baseContactsPath");
 
             response = responseMethod(token)
                     .get();
@@ -65,9 +76,7 @@ public class ApiActions {
     }
 
     public void getContactList() {
-        baseURI = configReader.getProperty("baseURI");
-        basePath = configReader.getProperty("baseContactsPath");
-        logger.info("Base URI and base path: " + baseURI + basePath);
+        baseUriSetting("baseContactsPath");
 
         response = responseMethod()
                 .get();
@@ -81,7 +90,7 @@ public class ApiActions {
     }
 
     public int getContactListStatusCode() {
-        int gStCode = (int) scenarioContext.getData(ObjectKeys.GET_STATUS_CODE);
+        int gStCode = scenarioContext.getData(ObjectKeys.GET_STATUS_CODE);
         logger.debug(String.valueOf(gStCode));
         return gStCode;
     }
@@ -93,17 +102,12 @@ public class ApiActions {
     }
 
     public void postRequestAddContactWithParameters(Map<String, String> params) {
-        baseURI = configReader.getProperty("baseURI");
-        basePath = configReader.getProperty("baseContactsPath");
-        logger.info("Current URI and base path: " + baseURI + basePath);
+        baseUriSetting("baseContactsPath");
+
         ContactRequest reqBody = new ContactRequest();
         utilActions.newContactCredentials(reqBody, params);
-        response = responseMethod()
-                .contentType(ContentType.JSON)
-                .body(reqBody)
-                .log()
-                .all()
-                .post();
+        response = bodyPostMethod(reqBody);
+
         response.then().log().all();
         String contactId = utilActions.getParamFromJson(response, "_id");
         ContactResponse respBody = response.body().as(ContactResponse.class);
@@ -116,17 +120,11 @@ public class ApiActions {
     }
 
     public void postRequestAddContactWithParameters() {
-        baseURI = configReader.getProperty("baseURI");
-        basePath = configReader.getProperty("baseContactsPath");
-        logger.info("Current URI and base path: " + baseURI + basePath);
+        baseUriSetting("baseContactsPath");
         ContactRequest reqBody = new ContactRequest();
         utilActions.newContactCredentials(reqBody);
-        response = responseMethod()
-                .contentType(ContentType.JSON)
-                .body(reqBody)
-                .log()
-                .all()
-                .post();
+        response = bodyPostMethod(reqBody);
+
         response.then().log().all();
         ContactResponse respBody = response.body().as(ContactResponse.class);
         logger.debug("Response body: " + respBody.toString());
@@ -139,8 +137,7 @@ public class ApiActions {
     }
 
     public void deleteContactById(String ContactId) {
-        baseURI = configReader.getProperty("baseURI");
-        basePath = configReader.getProperty("baseContactsPath") + "/" + ContactId;
+        baseUriSetting("baseContactsPath"+ "/" + ContactId);
         logger.debug("Contact ID to be deleted:" + ContactId);
         response = responseMethod()
                 .log()
@@ -153,9 +150,7 @@ public class ApiActions {
     }
 
     public void postRequestAddUserWithParameters() {
-        baseURI = configReader.getProperty("baseURI");
-        basePath = configReader.getProperty("baseUsersPath");
-        logger.info("Current URI and base path: " + baseURI + basePath);
+        baseUriSetting("baseUsersPath");
         UserRequest reqBody = new UserRequest();
         utilActions.newUserCredentials(reqBody);
         response = responseMethodWOToken()
@@ -177,8 +172,7 @@ public class ApiActions {
     }
 
     public void deleteUserByToken() {
-        baseURI = configReader.getProperty("baseURI");
-        basePath = configReader.getProperty("baseMeUserPath");
+        baseUriSetting("baseMeUserPath");
         logger.debug("Will be deleted " + ((UserResponse) scenarioContext.getData((ObjectKeys.NEW_USER))).getUser().getFirstName()
                 + " with token:" + ((UserResponse) scenarioContext.getData((ObjectKeys.NEW_USER))).getToken());
         response = responseMethod()

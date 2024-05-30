@@ -16,7 +16,13 @@ public class BrowserDriver {
     private static WebDriver driver;
     protected static final Logger logger = LoggerFactory.getLogger(BrowserDriver.class);
 
-
+    public static WebDriver getDriver() {
+        if (driver == null) {
+            logger.debug("Driver was initialized");
+            return setUp();
+        }
+        return driver;
+    }
     private static WebDriver setUp() {
         logger.debug("SetUp method is called");
         switch (BROWSER_TYPE) {
@@ -34,14 +40,6 @@ public class BrowserDriver {
                 driver = getChromeDriver();
         }
         logger.debug("Browser Type is:" + BROWSER_TYPE);
-        return driver;
-    }
-
-    public static WebDriver getDriver() {
-        if (driver == null) {
-            logger.debug("Driver was initialized");
-            return setUp();
-        }
         return driver;
     }
 

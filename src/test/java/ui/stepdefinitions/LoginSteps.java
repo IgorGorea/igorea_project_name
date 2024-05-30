@@ -6,7 +6,6 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.hamcrest.MatcherAssert;
-import org.openqa.selenium.WebDriver;
 import ui.pages.LoginPage;
 import utililities.ConfigReader;
 
@@ -15,11 +14,11 @@ import static org.hamcrest.Matchers.is;
 public class LoginSteps {
     private ScenarioContext scenarioContext = ScenarioContext.getScenarioInstance();
     private final ConfigReader configReader = new ConfigReader();
-    private final LoginPage loginPage = new LoginPage((WebDriver) scenarioContext.getData(ObjectKeys.WEB_DRIVER));
+    private final LoginPage loginPage = new LoginPage(scenarioContext.getData(ObjectKeys.WEB_DRIVER));
 
     @Given("user is created with valid credentials")
     public void userIsCreatedWithValidCredentials() {
-        loginPage.openPage((WebDriver) scenarioContext.getData(ObjectKeys.WEB_DRIVER), configReader.getProperty("signup.page"));
+        loginPage.openPage(scenarioContext.getData(ObjectKeys.WEB_DRIVER), configReader.getProperty("signup.page"));
         loginPage.submitValidCredentials();
     }
 
@@ -35,7 +34,7 @@ public class LoginSteps {
 
     @Then("user is logged in")
     public void userIsLoggedIn() {
-        MatcherAssert.assertThat(loginPage.logoutIsPresent(), is("Logout"));
+        MatcherAssert.assertThat(loginPage.logoutIsPresent(), is(true));
     }
 
 
@@ -46,7 +45,7 @@ public class LoginSteps {
 
     @Then("there is created contact with {string}")
     public void thereIsCreatedContactWith(String nameToCheck) {
-        MatcherAssert.assertThat(loginPage.firstContactName(), is(nameToCheck));
+        MatcherAssert.assertThat(loginPage.getFirstContactName(), is(nameToCheck));
     }
 
 }

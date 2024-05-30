@@ -12,7 +12,7 @@ public class CustomParams {
     private final WaitUtilities waitUtilities = new WaitUtilities();
     private final ConfigReader configReader = new ConfigReader();
     private final int DEFAULT_TIMEOUT = Integer.parseInt(configReader.getProperty("defaultAwaitTime"));
-
+//TODO to read about DataTableType for POJO
     @DataTableType(replaceWithEmptyString = "<empty>")
     public String stringType(String cell) {
         return cell;

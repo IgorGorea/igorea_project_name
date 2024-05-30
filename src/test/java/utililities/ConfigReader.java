@@ -1,11 +1,16 @@
 package utililities;
 
+import cfg.BrowserDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
 public class ConfigReader {
     private final Properties properties;
+    protected static final Logger logger = LoggerFactory.getLogger(BrowserDriver.class);
 
     public ConfigReader() {
         properties = new Properties();
@@ -14,8 +19,7 @@ public class ConfigReader {
             properties.load(inputStream);
             inputStream.close();
         } catch (IOException e) {
-            e.printStackTrace();
-        }
+            logger.error("The valid input was not provided from config.properties", e);        }
     }
 
     public String getProperty(String key) {

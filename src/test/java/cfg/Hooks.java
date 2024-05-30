@@ -1,16 +1,15 @@
 package cfg;
 
 import api.actions.ApiActions;
+import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import context.ObjectKeys;
 import context.ScenarioContext;
 import io.cucumber.java.*;
 import org.openqa.selenium.WebDriver;
-import utililities.ConfigReader;
-import ch.qos.logback.classic.LoggerContext;
 import org.slf4j.LoggerFactory;
-
+import utililities.ConfigReader;
 
 import java.time.Duration;
 
@@ -70,7 +69,7 @@ public class Hooks {
 
     @After("@UI")
     public void afterUI() {
-        BrowserDriver.clearBrowserCache((WebDriver) scenarioContext.getData(ObjectKeys.WEB_DRIVER));
+        BrowserDriver.clearBrowserCache(scenarioContext.getData(ObjectKeys.WEB_DRIVER));
     }
 
     @AfterAll

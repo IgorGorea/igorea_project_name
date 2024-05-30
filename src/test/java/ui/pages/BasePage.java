@@ -2,14 +2,14 @@ package ui.pages;
 
 import cfg.CustomParams;
 import com.github.javafaker.Faker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import context.ObjectKeys;
 import context.ScenarioContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utililities.WaitUtilities;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -21,7 +21,7 @@ public abstract class BasePage {
     protected final Logger logger = LoggerFactory.getLogger(BasePage.class);
     protected final Faker faker = new Faker();
 
-    @FindBy(xpath = "//input[@id='email']")
+    @FindBy(id = "email")
     public WebElement email;
     @FindBy(id = "firstName")
     public WebElement firstName;
@@ -40,12 +40,8 @@ public abstract class BasePage {
         PageFactory.initElements(driver, this);
     }
 
-    public void enterEmail(String em) {
-        customParams.sendKeysWithParam(email, em);
-    }
-
-    public void enterPassword(String pass) {
-        customParams.sendKeysWithParam(password, pass, 15);
+    public void sendText(WebElement element, String text){
+        customParams.sendKeysWithParam(element, text);
     }
 
     public void sendFirstName(String fName) {
@@ -65,8 +61,8 @@ public abstract class BasePage {
         customParams.pressTheButtonWithParam(cancelButton, 5);
     }
 
-    public String logoutIsPresent() {
-        return logoutButton.getText();
+    public boolean logoutIsPresent() {
+        return logoutButton.isDisplayed();
     }
 
     public void logout() {
@@ -79,7 +75,7 @@ public abstract class BasePage {
     }
 
     public void assertThatPageIsOpened(String url) {
-        assertThat("The page is not on Login Page", assertIsOnPage((WebDriver) scenarioContext.getData(ObjectKeys.WEB_DRIVER), url));
+        assertThat("The page is not on Login Page", assertIsOnPage(scenarioContext.getData(ObjectKeys.WEB_DRIVER), url));
     }
 
     public String gettingRandomEmail() {
@@ -102,26 +98,26 @@ public abstract class BasePage {
     }
 
     public void sendValidEm() {
-        String email = gettingRandomEmail();
-        enterEmail(email);
+        String eml = gettingRandomEmail();
+        sendText(email, eml);
         scenarioContext.setData(ObjectKeys.USER_EMAIL, email);
     }
 
     public void sendValidPass() {
-        String password = faker.number().digits(10);
-        enterPassword(password);
+        String pass = faker.number().digits(10);
+        sendText(password,pass);
         scenarioContext.setData(ObjectKeys.USER_PASS, password);
     }
 
     public void sendValidFName() {
         String fName = faker.name().firstName();
-        sendFirstName(fName);
+        sendText(firstName,fName);
         scenarioContext.setData(ObjectKeys.FIRST_NAME, fName);
     }
 
     public void sendValidLName() {
         String lName = faker.name().lastName();
-        sendLastName(lName);
+        sendText(lastName,lName);
         scenarioContext.setData(ObjectKeys.LAST_NAME, lName);
     }
 }

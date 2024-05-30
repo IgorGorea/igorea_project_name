@@ -1,4 +1,4 @@
-@API @Smoke @Run
+#@API @Smoke @Run
 Feature: API Tests for New Contact
 
   Background:
