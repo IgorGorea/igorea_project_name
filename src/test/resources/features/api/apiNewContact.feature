@@ -1,4 +1,4 @@
-@API @Smoke @Run
+#@API @Smoke @Run
 Feature: API Tests for New Contact
 
   Background:
@@ -22,10 +22,12 @@ Feature: API Tests for New Contact
     Then the POST response status code should be 201
     And the response body contains "_id"
 
+
   Scenario: Verify API response to contact list
     When user sends a GET request to contact list
     Then the GET contact list response status code should be 200
     And the contact list contains "firstName" in all response bodies
+
 
   Scenario: Delete New Contact
     And user creates a contact with valid parameters

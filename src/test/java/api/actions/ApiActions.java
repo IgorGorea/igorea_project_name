@@ -1,13 +1,17 @@
 package api.actions;
 
+import api.dtos.requests.ContactRequest;
+import api.dtos.requests.UserRequest;
+import api.dtos.responses.ContactResponse;
+import api.dtos.responses.UserResponse;
+import context.ObjectKeys;
+import context.ScenarioContext;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import ui.context.ObjectKeys;
-import ui.context.ScenarioContext;
-import ui.utils.ConfigReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import utililities.ConfigReader;
 
 import java.util.List;
 import java.util.Map;
@@ -18,36 +22,46 @@ import static org.junit.Assert.assertTrue;
 
 public class ApiActions {
     protected ConfigReader configReader = new ConfigReader();
-    protected static final Logger logger = LogManager.getLogger(ApiActions.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ApiActions.class);
     protected ScenarioContext scenarioContext = ScenarioContext.getScenarioInstance();
     private Response response;
     private final UtilActions utilActions = new UtilActions();
 
-    private RequestSpecification responseMethodWOBearer() {
-
+    private RequestSpecification responseMethodWOToken() {
         return given()
                 .when();
     }
 
     private RequestSpecification responseMethod() {
-        String bearer = scenarioContext.getData(ObjectKeys.BEARER).toString();
-        return given().header("Authorization", "Bearer " + bearer)
+        String token = ((UserResponse) scenarioContext.getData((ObjectKeys.NEW_USER))).getToken();
+        return responseMethod(token);
+    }
+
+    private RequestSpecification responseMethod(String token) {
+        return given().header("Authorization", "Bearer " + token)
                 .when();
     }
 
-    private RequestSpecification responseMethod(String bearer) {
-        return given().header("Authorization", "Bearer " + bearer)
-                .when();
+    private Response bodyPostMethod(ContactRequest reqBody){
+        return responseMethod()
+                .contentType(ContentType.JSON)
+                .body(reqBody)
+                .log()
+                .all()
+                .post();
+    }
+    private void baseUriSetting(String pathFromProperties) {
+        baseURI = configReader.getProperty("baseURI");
+        basePath = configReader.getProperty(pathFromProperties);
+        logger.debug("Current URI and base path: " + baseURI + basePath);
     }
 
     public void getContactListHealthCheck() {
         try {
-            String bearer = configReader.getProperty("bearer");
-            baseURI = configReader.getProperty("baseURI");
-            basePath = "/contacts";
-            logger.info("Base URI and base path are set to: " + baseURI + basePath);
+            String token = configReader.getProperty("token.bearer");
+            baseUriSetting("baseContactsPath");
 
-            response = responseMethod(bearer)
+            response = responseMethod(token)
                     .get();
 
             if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
@@ -55,15 +69,14 @@ public class ApiActions {
             } else {
                 logger.error("GET request to contacts endpoint failed. Status code: " + response.getStatusCode());
             }
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             logger.error("An exception occurred while sending GET request to contacts endpoint: " + e.getMessage());
+            throw new NullPointerException();
         }
     }
 
     public void getContactList() {
-        baseURI = configReader.getProperty("baseURI");
-        basePath = "/contacts";
-        logger.info("Base URI and base path: " + baseURI + basePath);
+        baseUriSetting("baseContactsPath");
 
         response = responseMethod()
                 .get();
@@ -77,8 +90,8 @@ public class ApiActions {
     }
 
     public int getContactListStatusCode() {
-        int gStCode = (int) scenarioContext.getData(ObjectKeys.GET_STATUS_CODE);
-        logger.debug(gStCode);
+        int gStCode = scenarioContext.getData(ObjectKeys.GET_STATUS_CODE);
+        logger.debug(String.valueOf(gStCode));
         return gStCode;
     }
 
@@ -89,17 +102,32 @@ public class ApiActions {
     }
 
     public void postRequestAddContactWithParameters(Map<String, String> params) {
-        baseURI = configReader.getProperty("baseURI");
-        basePath = "/contacts";
-        logger.info("Current URI and base path: " + baseURI + basePath);
-        response = responseMethod()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .log()
-                .all()
-                .post();
-        response.then().log().all();
+        baseUriSetting("baseContactsPath");
 
+        ContactRequest reqBody = new ContactRequest();
+        utilActions.newContactCredentials(reqBody, params);
+        response = bodyPostMethod(reqBody);
+
+        response.then().log().all();
+        String contactId = utilActions.getParamFromJson(response, "_id");
+        ContactResponse respBody = response.body().as(ContactResponse.class);
+        String contactIdPojo = respBody.getId();
+        scenarioContext.setData(ObjectKeys.NEW_CONTACT_ID, contactId);
+        logger.info("Json parser got the value: " + contactId + "and id gotten using Pojo object is: " + contactIdPojo);
+        scenarioContext.setData(ObjectKeys.POST_STATUS_CODE, response.getStatusCode());
+        logger.debug("POST Status code:" + response.getStatusCode());
+        scenarioContext.setData(ObjectKeys.RESPONSE, response.then().extract().response());
+    }
+
+    public void postRequestAddContactWithParameters() {
+        baseUriSetting("baseContactsPath");
+        ContactRequest reqBody = new ContactRequest();
+        utilActions.newContactCredentials(reqBody);
+        response = bodyPostMethod(reqBody);
+
+        response.then().log().all();
+        ContactResponse respBody = response.body().as(ContactResponse.class);
+        logger.debug("Response body: " + respBody.toString());
         String contactId = utilActions.getParamFromJson(response, "_id");
         scenarioContext.setData(ObjectKeys.NEW_CONTACT_ID, contactId);
         logger.info("Json parser got the value: " + contactId);
@@ -109,8 +137,7 @@ public class ApiActions {
     }
 
     public void deleteContactById(String ContactId) {
-        baseURI = configReader.getProperty("baseURI");
-        basePath = "/contacts/" + ContactId;
+        baseUriSetting("baseContactsPath"+ "/" + ContactId);
         logger.debug("Contact ID to be deleted:" + ContactId);
         response = responseMethod()
                 .log()
@@ -122,34 +149,32 @@ public class ApiActions {
         scenarioContext.setData(ObjectKeys.RESPONSE, response.then().extract().response());
     }
 
-    public void postRequestAddUserWithParameters(Map<String, String> params) {
-        baseURI = configReader.getProperty("baseURI");
-        basePath = "/users";
-        logger.info("Current URI and base path: " + baseURI + basePath);
-        response = responseMethodWOBearer()
+    public void postRequestAddUserWithParameters() {
+        baseUriSetting("baseUsersPath");
+        UserRequest reqBody = new UserRequest();
+        utilActions.newUserCredentials(reqBody);
+        response = responseMethodWOToken()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(reqBody)
                 .log()
                 .all()
                 .post();
         response.then().log().all();
-        String token = utilActions.getParamFromJson(response, "token");
-        scenarioContext.setData(ObjectKeys.BEARER, token);
-        scenarioContext.setData(ObjectKeys.F_USER_NAME, utilActions.getParamFromJson(response, "user", "firstName"));
-        scenarioContext.setData(ObjectKeys.L_USER_NAME, utilActions.getParamFromJson(response, "user", "lastName"));
-        scenarioContext.setData(ObjectKeys.USER_EMAIL, utilActions.getParamFromJson(response, "user", "email"));
+        UserResponse respBody = response.body().as(UserResponse.class);
+        String token = respBody.getToken();
+        scenarioContext.setData(ObjectKeys.NEW_USER, respBody);
+        scenarioContext.setData(ObjectKeys.USER_EMAIL, respBody.getUser().getEmail());
         logger.debug("POST Status code:" + response.getStatusCode());
         scenarioContext.setData(ObjectKeys.POST_STATUS_CODE, response.getStatusCode());
         scenarioContext.setData(ObjectKeys.RESPONSE, response.then().extract().response());
 
-        logger.info("Json parser got the bearer value: " + utilActions.getParamFromJson(response, "token"));
+        logger.info("Json parser got the token bearer value: " + token);
     }
 
-    public void deleteUserByBearer() {
-        baseURI = configReader.getProperty("baseURI");
-        basePath = "users/me";
-        logger.debug("Will be deleted " + scenarioContext.getData(ObjectKeys.F_USER_NAME).toString()
-                + " with token:" + scenarioContext.getData(ObjectKeys.BEARER).toString());
+    public void deleteUserByToken() {
+        baseUriSetting("baseMeUserPath");
+        logger.debug("Will be deleted " + ((UserResponse) scenarioContext.getData((ObjectKeys.NEW_USER))).getUser().getFirstName()
+                + " with token:" + ((UserResponse) scenarioContext.getData((ObjectKeys.NEW_USER))).getToken());
         response = responseMethod()
                 .log()
                 .all()

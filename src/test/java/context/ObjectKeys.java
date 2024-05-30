@@ -1,0 +1,19 @@
+package context;
+
+public enum ObjectKeys {
+    WEB_DRIVER,
+    FIRST_NAME,
+    LAST_NAME,
+    GET_STATUS_CODE,
+    POST_STATUS_CODE,
+    DEL_USER_STATUS_CODE,
+    DEL_CONTACT_STATUS_CODE,
+    FIRST_NAME_PRESENCE,
+    NEW_CONTACT_ID,
+    USER_EMAIL,
+    USER_PASS,
+    NEW_USER,
+    RESPONSE
+}
+
+

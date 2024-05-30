@@ -1,10 +1,10 @@
-package ui.cfg;
+package cfg;
 
 import io.cucumber.java.Scenario;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
-import ui.utils.ConfigReader;
+import utililities.ConfigReader;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,10 +13,26 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
-public class ScreenshotUtils {
+import static cfg.BrowserDriver.logger;
+
+public class ScreenshotCfg {
     private String stepName;
     private WebDriver driver = BrowserDriver.getDriver();
+
+    public String gettingScreensPath() {
+        String currentDate = getCurrentDateTime("yyyy-MM-dd");
+        String baseDirPath = "./target/evidence/" + currentDate + "/";
+        createDirectory(baseDirPath);
+        String runStartTime = getCurrentDateTime("HH.mm");
+        String baseDirPathByHour = baseDirPath + runStartTime + "/";
+        createDirectory(baseDirPathByHour);
+
+        String stepDirPath = baseDirPathByHour + stepName + "/";
+        createDirectory(stepDirPath);
+        return stepDirPath;
+    }
 
     protected void captureScreen(String stepName, boolean isNegativeScenario, Scenario scenario) {
         try {
@@ -24,38 +40,28 @@ public class ScreenshotUtils {
             File source = screenshotDriver.getScreenshotAs(OutputType.FILE);
             //For screens in report
             byte[] screenshot = screenshotDriver.getScreenshotAs(OutputType.BYTES);
-            scenario.attach(screenshot,"image/png", "Screenshot for " + stepName);
+            scenario.attach(screenshot, "image/png", "Screenshot for " + stepName);
 
-            String currentDate = getCurrentDateTime("yyyy-MM-dd");
-            String baseDirPath = "./target/screenshots/" + currentDate + "/";
-            createDirectory(baseDirPath);
-            String runStartTime = getCurrentDateTime("HH.mm");
-            String baseDirPathByHour = baseDirPath + runStartTime + "/";
-            createDirectory(baseDirPathByHour);
-
-            String stepDirPath = baseDirPathByHour + stepName + "/";
-            createDirectory(stepDirPath);
+            String screenshotPath = gettingScreensPath() + "screenshots/";
+            createDirectory(screenshotPath);
 
             if (isNegativeScenario) {
                 stepName += "_ErrorMes";
             }
 
             String screenshotName = stepName + "_" + getCurrentDateTime("HHmmssSSS") + ".png";
-            String screenshotPath = stepDirPath + screenshotName;
-
+            screenshotPath += screenshotName;
             Files.copy(source.toPath(), Paths.get(screenshotPath));
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Screenshot was not created due to IOException. ", e);
         }
     }
 
     public void setStepName(String stepName) {
         this.stepName = stepName;
     }
-    public String getStepName() {
-        return stepName;
-    }
+
     protected String getCurrentDateTime(String pattern) {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern(pattern));
     }
@@ -75,7 +81,7 @@ public class ScreenshotUtils {
         String screenshotsDirectoryPath = "./target/screenshots/";
         String screenshotRetentionPeriodProperty = configReader.getProperty("screenshotRetentionPeriodInDays");
         if (screenshotRetentionPeriodProperty == null) {
-            System.out.println("Screenshot retention period not found in properties file.");
+            logger.error("Screenshot retention period not found in properties file.");
             return;
         }
         int screenshotRetentionPeriod = Integer.parseInt(screenshotRetentionPeriodProperty);
@@ -90,10 +96,10 @@ public class ScreenshotUtils {
                         LocalDate directoryDate = LocalDate.parse(dateDirectory.getName(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                         if (directoryDate.isBefore(thresholdDate)) {
                             deleteDirectory(dateDirectory);
-                            System.out.println("Deleted directory: " + dateDirectory.getAbsolutePath());
+                            logger.debug("Deleted directory: " + dateDirectory.getAbsolutePath());
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } catch (DateTimeParseException e) {
+                        logger.error("Error parsing directory name as date: " + dateDirectory.getName());
                     }
                 }
             }
@@ -119,7 +125,7 @@ public class ScreenshotUtils {
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error deleting directory: " + directory.getAbsolutePath(), e);
         }
     }
 }

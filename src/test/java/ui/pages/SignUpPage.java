@@ -18,12 +18,6 @@ public class SignUpPage extends BasePage {
         super(driver);
     }
 
-    //Accessing the element though cssSelector
-//    public void signUp() {
-//        BrowserDriver.getDriver().findElement(By.cssSelector(String.valueOf(signUpButton))).click();
-//    }
-
-
     public String signUpIsPresent() {
         return signUpButton.getText();
     }
@@ -33,15 +27,15 @@ public class SignUpPage extends BasePage {
         return errorMessage.getText();
     }
 
-    public void introduceCredentials(Map<String, String> regMap, String email) {
+    public void introduceCredentials(Map<String, String> regMap, String eml) {
         if (regMap.get("Email").equals("random")) {
-            enterEmail(email);
+            sendText(email, eml);
         } else {
-            enterEmail(regMap.get("Email"));
+            sendText(email, regMap.get("Email"));
         }
-        sendFirstName(regMap.get("FirstName"));
-        sendLastName(regMap.get("LastName"));
-        enterPassword(regMap.get("Password"));
+        sendText(firstName, regMap.get("FirstName"));
+        sendText(lastName, regMap.get("LastName"));
+        sendText(password, regMap.get("Password"));
     }
 
     public void submitWithSignUpCredentials(Map<String, String> regMap) {

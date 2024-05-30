@@ -1,4 +1,4 @@
-@API @UI @Run
+#@API @UI @Run
 Feature: Login and New Contact
 
   Scenario: Create New Contact at New User

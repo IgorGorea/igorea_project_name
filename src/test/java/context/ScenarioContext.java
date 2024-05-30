@@ -1,6 +1,6 @@
-package ui.context;
+package context;
 
-import ui.utils.ConfigReader;
+import utililities.ConfigReader;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,8 +32,8 @@ public class ScenarioContext {
         scenarioData.put(key, value);
     }
 
-    public Object getData(ObjectKeys key) {
-        return scenarioData.get(key);
+    public <T> T getData(ObjectKeys key) {
+        return (T) scenarioData.get(key);
     }
 
     public void resetContext() {
