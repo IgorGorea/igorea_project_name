@@ -1,7 +1,9 @@
 package api.stepdefinitions;
 
 import api.actions.ApiActions;
+import api.actions.UserApiActions;
 import api.actions.UtilActions;
+import cfg.EndPoints;
 import context.ObjectKeys;
 import context.ScenarioContext;
 import io.cucumber.java.en.Given;
@@ -12,18 +14,18 @@ import static org.junit.Assert.assertEquals;
 
 public class NewUser {
     protected final ScenarioContext scenarioContext = ScenarioContext.getScenarioInstance();
-    protected final ApiActions apiActions = new ApiActions();
+    protected final UserApiActions userApiActions = new UserApiActions();
 
     @Given("the server is up")
     public void healthCheckTheServerIsUp() {
         //In real project will be changed with HealthCheck
-        apiActions.getContactListHealthCheck();
+        userApiActions.getContactListHealthCheck();
     }
 
     @Given("admin has created a new user")
     @When("admin creates a new user")
     public void adminCreatesANewUser() {
-        apiActions.postRequestAddUserWithParameters();
+        userApiActions.postRequestAddUserWithParameters();
     }
 
     @Then("the POST response status code should be {int}")
@@ -33,6 +35,6 @@ public class NewUser {
 
     @Then("the response body contains {string}")
     public void verifyResponseBodyContainsSuccess(String expContent) {
-        apiActions.assertThatBodyContains(expContent);
+        userApiActions.assertThatBodyContains(expContent);
     }
 }

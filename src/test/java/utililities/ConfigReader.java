@@ -29,5 +29,8 @@ public class ConfigReader {
         }
         return properties.getProperty(key);
     }
+    public void putProperty(String key, Object value) {
+        properties.put(key, value);
+    }
 
 }

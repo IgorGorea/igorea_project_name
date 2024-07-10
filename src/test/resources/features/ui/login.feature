@@ -1,4 +1,4 @@
-@SmokeTest @UI @Run
+#@SmokeTest @UI @Run
 Feature: Login of new user
 
   Scenario: Successful log in

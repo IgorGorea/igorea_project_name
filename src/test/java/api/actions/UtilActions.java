@@ -2,15 +2,14 @@ package api.actions;
 
 import api.dtos.requests.ContactRequest;
 import api.dtos.requests.UserRequest;
-import com.github.javafaker.Faker;
 import context.ObjectKeys;
 import context.ScenarioContext;
 import io.restassured.response.Response;
+import net.datafaker.Faker;
 import utililities.JsonParser;
 
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.HashMap;
 import java.util.Map;
 
 public class UtilActions {

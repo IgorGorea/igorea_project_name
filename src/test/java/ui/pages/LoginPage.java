@@ -20,10 +20,11 @@ public class LoginPage extends BasePage {
     }
 
     public void submitLoginCredentials() {
-        sendText(email, scenarioContext.getData(ObjectKeys.USER_EMAIL));
-        sendText(password, scenarioContext.getData(ObjectKeys.USER_PASS));
+        enterText(email, scenarioContext.getData(ObjectKeys.USER_EMAIL));
+        enterText(password, scenarioContext.getData(ObjectKeys.USER_PASS));
         submit();
     }
+
     public String getFirstContactName() {
         return firstContactName.getText();
     }

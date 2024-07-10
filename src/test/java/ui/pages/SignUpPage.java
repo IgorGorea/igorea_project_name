@@ -27,15 +27,15 @@ public class SignUpPage extends BasePage {
         return errorMessage.getText();
     }
 
-    public void introduceCredentials(Map<String, String> regMap, String eml) {
+    public void introduceCredentials(Map<String, String> regMap, String em) {
         if (regMap.get("Email").equals("random")) {
-            sendText(email, eml);
+            enterText(email,em);
         } else {
-            sendText(email, regMap.get("Email"));
+            enterText(email, regMap.get("Email"));
         }
-        sendText(firstName, regMap.get("FirstName"));
-        sendText(lastName, regMap.get("LastName"));
-        sendText(password, regMap.get("Password"));
+        enterText(firstName, regMap.get("FirstName"));
+        enterText(lastName, regMap.get("LastName"));
+        enterText(password, regMap.get("Password"));
     }
 
     public void submitWithSignUpCredentials(Map<String, String> regMap) {
