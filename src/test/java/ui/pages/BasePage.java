@@ -1,15 +1,15 @@
 package ui.pages;
 
 import cfg.CustomParams;
-import com.github.javafaker.Faker;
+import net.datafaker.Faker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import context.ObjectKeys;
 import context.ScenarioContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import utililities.WaitUtilities;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,19 +39,9 @@ public abstract class BasePage {
     public BasePage(WebDriver driver) {
         PageFactory.initElements(driver, this);
     }
-
-    public void sendText(WebElement element, String text){
-        customParams.sendKeysWithParam(element, text);
+    public void enterText(WebElement elem, String text){
+        customParams.sendKeysWithParam(elem, text);
     }
-
-    public void sendFirstName(String fName) {
-        customParams.sendKeysWithParam(firstName, fName);
-    }
-
-    public void sendLastName(String lName) {
-        customParams.sendKeysWithParam(lastName, lName);
-    }
-
 
     public void submit() {
         customParams.pressTheButtonWithParam(submitButton, 5);
@@ -61,8 +51,8 @@ public abstract class BasePage {
         customParams.pressTheButtonWithParam(cancelButton, 5);
     }
 
-    public boolean logoutIsPresent() {
-        return logoutButton.isDisplayed();
+    public String logoutIsPresent() {
+        return logoutButton.getText();
     }
 
     public void logout() {
@@ -98,26 +88,26 @@ public abstract class BasePage {
     }
 
     public void sendValidEm() {
-        String eml = gettingRandomEmail();
-        sendText(email, eml);
-        scenarioContext.setData(ObjectKeys.USER_EMAIL, email);
+        String em = gettingRandomEmail();
+        enterText(email, em);
+        scenarioContext.setData(ObjectKeys.USER_EMAIL, em);
     }
 
     public void sendValidPass() {
         String pass = faker.number().digits(10);
-        sendText(password,pass);
-        scenarioContext.setData(ObjectKeys.USER_PASS, password);
+        enterText(password, pass);
+        scenarioContext.setData(ObjectKeys.USER_PASS, pass);
     }
 
     public void sendValidFName() {
         String fName = faker.name().firstName();
-        sendText(firstName,fName);
+        enterText(firstName, fName);
         scenarioContext.setData(ObjectKeys.FIRST_NAME, fName);
     }
 
     public void sendValidLName() {
         String lName = faker.name().lastName();
-        sendText(lastName,lName);
+        enterText(lastName, lName);
         scenarioContext.setData(ObjectKeys.LAST_NAME, lName);
     }
 }

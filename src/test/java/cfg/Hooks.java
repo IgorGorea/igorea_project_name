@@ -1,5 +1,7 @@
 package cfg;
 
+import api.actions.UserApiActions;
+import ch.qos.logback.classic.LoggerContext;
 import api.actions.ApiActions;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -10,14 +12,18 @@ import io.cucumber.java.*;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.LoggerFactory;
 import utililities.ConfigReader;
+import utililities.DBInitializer;
+import org.slf4j.LoggerFactory;
+import utililities.ConfigReader;
 
 import java.time.Duration;
 
 
 public class Hooks {
-    ApiActions apiActions = new ApiActions();
+    UserApiActions userApiActions = new UserApiActions();
     ScreenshotCfg screenshotCfg = new ScreenshotCfg();
     ScenarioContext scenarioContext = ScenarioContext.getScenarioInstance();
+    DBInitializer dbInitializer = new DBInitializer();
 
     @BeforeAll
     public static void beforeAll() {
@@ -29,6 +35,9 @@ public class Hooks {
     @Before("@UI")
     public void beforeUI(Scenario scenario) {
         screenshotCfg.setStepName(scenario.getName());
+
+        ConfigReader configReader = new ConfigReader();
+        configReader.putProperty("logDir", screenshotCfg.gettingScreensPath());
 
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         JoranConfigurator jc = new JoranConfigurator();
@@ -55,6 +64,11 @@ public class Hooks {
 
     }
 
+    @Before("@DB")
+    public void beforeDB() {
+        dbInitializer.initialize();
+    }
+
 
     @AfterStep("@UI")
     public void afterStep(Scenario scenario) {
@@ -64,11 +78,17 @@ public class Hooks {
 
     @After("@API")
     public void afterAPI() {
-        apiActions.deleteUserByToken();
+        userApiActions.deleteUserByToken();
     }
 
     @After("@UI")
     public void afterUI() {
+        BrowserDriver.clearBrowserCache(scenarioContext.getData(ObjectKeys.WEB_DRIVER));
+    }
+
+    @After("@DB")
+    public void afterDB() {
+        dbInitializer.dBTearDown();
         BrowserDriver.clearBrowserCache(scenarioContext.getData(ObjectKeys.WEB_DRIVER));
     }
 
